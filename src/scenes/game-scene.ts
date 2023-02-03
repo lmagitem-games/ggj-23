@@ -5,21 +5,21 @@ import { CONST } from '../const/const';
 export class GameScene extends Phaser.Scene {
   // field and game setting
 
-  private gameHeight: number;
-  private gameWidth: number;
-  private boardWidth: number;
-  private boardHeight: number;
-  private horizontalFields: number;
-  private verticalFields: number;
-  private tick: number;
+  private gameHeight: number = 800;
+  private gameWidth: number = 600;
+  private boardWidth: number = 224;
+  private boardHeight: number = 256;
+  private horizontalFields: number = 4;
+  private verticalFields: number = 3;
+  private tick: number = 5;
 
   // objects
-  private player: Snake;
-  private apple: Apple;
-  private gameBorder: Phaser.GameObjects.Graphics[];
+  private player?: Snake;
+  private apple?: Apple;
+  private gameBorder: Phaser.GameObjects.Graphics[] = [];
 
   // texts
-  private scoreText: Phaser.GameObjects.BitmapText;
+  private scoreText?: Phaser.GameObjects.BitmapText;
 
   constructor() {
     super({
@@ -89,7 +89,7 @@ export class GameScene extends Phaser.Scene {
     if (this.tick === 0) {
       this.tick = time;
     }
-    if (!this.player.isDead()) {
+    if (!!this.player && !this.player.isDead()) {
       if (time - this.tick > 100) {
         this.player.move();
         this.checkCollision();
@@ -102,6 +102,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private checkCollision(): void {
+    if (!!this.player && !!this.apple && !!this.scoreText) {
     const { x: headX, y: headY } = this.player.getHead();
 
     // player vs. apple collision
@@ -120,7 +121,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     // snake vs. snake collision
-    this.player.checkSnakeSnakeCollision();
+    this.player.checkSnakeSnakeCollision();}
   }
 
   private rndXPos(): number {

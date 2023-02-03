@@ -1,7 +1,7 @@
 import { CONST } from '../const/const';
 
 export class MainMenuScene extends Phaser.Scene {
-  private startKey: Phaser.Input.Keyboard.Key;
+  private startKey?: Phaser.Input.Keyboard.Key;
   private bitmapTexts: Phaser.GameObjects.BitmapText[] = [];
 
   constructor() {
@@ -62,7 +62,7 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   update(): void {
-    if (this.startKey.isDown) {
+    if (!!this.startKey && this.startKey.isDown) {
       this.scene.start('GameScene');
     }
   }

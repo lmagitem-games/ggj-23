@@ -4,8 +4,8 @@ import { IGraphicsConstructor } from '../interfaces/graphics.interface';
 export class Apple extends Phaser.GameObjects.Graphics {
   constructor(aParams: IGraphicsConstructor) {
     super(aParams.scene, aParams.options);
-    this.x = aParams.options.x;
-    this.y = aParams.options.y;
+    this.x = aParams.options?.x || 0;
+    this.y = aParams.options?.y || 0;
     this.fillStyle(0x61e85b, 0.8);
     this.fillRect(
       CONST.FIELD_SIZE,
