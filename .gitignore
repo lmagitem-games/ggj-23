@@ -6,3 +6,6 @@ node_modules/
 
 # Files
 .DS_STORE
+
+# Generated
+bundle.js
