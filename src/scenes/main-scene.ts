@@ -84,36 +84,7 @@ export class MainScene extends Phaser.Scene {
         this.initAudio();
 
         // create button to choice direction
-        this.add.text(100, 1000, 'Down', { font: "65px", align: "center" })
-            .setOrigin(0.5)
-            .setPadding(10)
-            .setDepth(50)
-            .setStyle({ backgroundColor: '#111' })
-            .setInteractive()
-            .on('pointerdown', () => console.log('pressed down'));
-        this.add.text(900, 1000, 'Launch simulation', { font: "65px", align: "center" })
-            .setOrigin(0.5)
-            .setPadding(10)
-            .setDepth(50)
-            .setStyle({ backgroundColor: '#111' })
-            .setInteractive()
-            .on('pointerdown', () => this.behaviorSelected = true);
-
-
-        //     var buttonOne = new uiWidgets.TextButton(this, 0, 0, "button", newGameCallback, this, 1, 0, 2, 1)
-        //     .setText("New Game", textStyle)
-        //     .eventTextYAdjustment(3);
-        //   var buttonTwo = new uiWidgets.TextButton(this, 0, 0, "button", continueCallback, this, 1, 0, 2, 1)
-        //     .setText("Continue", textStyle)
-        //     .eventTextYAdjustment(3);
-        //   var buttonThree = new uiWidgets.TextButton(this, 0, 0, "button", optionsCallback, this, 1, 0, 2, 1)
-        //     .setText("Options", textStyle)
-        //     .eventTextYAdjustment(3);
-
-        //   var column = new uiWidgets.Column(this, 200, 100);
-        //   column.addNode(buttonOne, paddingX=0, paddingY=10);
-        //   column.addNode(buttonTwo, paddingX=0, paddingY=10);
-        //   column.addNode(buttonThree, paddingX=0, paddingY=10);
+        this.buildMenu();
 
 
         console.log('Initialized Map:', this.map);
@@ -129,6 +100,23 @@ export class MainScene extends Phaser.Scene {
             timeScale: 1,
             paused: false
         });
+    }
+
+    private buildMenu() {
+        this.add.text(this.mapWidth / 2, this.mapHeight / 2, 'Down', { font: "65px", align: "center" })
+            .setOrigin(0.5)
+            .setPadding(10)
+            .setDepth(50)
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => console.log('pressed down'));
+        this.add.text(900, 1000, 'Launch simulation', { font: "65px", align: "center" })
+            .setOrigin(0.5)
+            .setPadding(10)
+            .setDepth(50)
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => this.behaviorSelected = true);
     }
 
     private simulationloop() {
@@ -249,8 +237,11 @@ export class MainScene extends Phaser.Scene {
         if (this.rootWaterSound1?.isPlaying) soundsPlaying++;
         if (this.rootWaterSound2?.isPlaying) soundsPlaying++;
         if (this.rootWaterSound3?.isPlaying) soundsPlaying++;
-        let volume = this.soundParam === 1 ? Math.random() * 0.7 + 0.3 - 0.0415 * soundsPlaying : 1;
+        let volume = this.soundParam === 1 ? Math.random() * 0.2 + 0.7 - 0.1 * soundsPlaying
+            : this.soundParam === 2 ? 1 - 0.1 * soundsPlaying : 1;
         if (volume > 1) volume = 1;
+        if (this.soundParam === 1 && volume > 0.8) volume = 0.8;
+        if (this.soundParam === 2 && volume < 0.5) volume = 0.5;
         console.log(volume)
 
         setTimeout(() => {

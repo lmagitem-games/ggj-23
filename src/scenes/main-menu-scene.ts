@@ -86,7 +86,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 26,
         'snakeFont',
-        '4 : PLAY MAP 2 - normal dirt v2 bis',
+        '4 : PLAY MAP 2 - dirt v2 + modulation entre .5 et 1',
         8
       )
     );
