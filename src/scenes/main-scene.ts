@@ -100,6 +100,22 @@ export class MainScene extends Phaser.Scene {
             .on('pointerdown', () => this.behaviorSelected = true);
 
 
+        //     var buttonOne = new uiWidgets.TextButton(this, 0, 0, "button", newGameCallback, this, 1, 0, 2, 1)
+        //     .setText("New Game", textStyle)
+        //     .eventTextYAdjustment(3);
+        //   var buttonTwo = new uiWidgets.TextButton(this, 0, 0, "button", continueCallback, this, 1, 0, 2, 1)
+        //     .setText("Continue", textStyle)
+        //     .eventTextYAdjustment(3);
+        //   var buttonThree = new uiWidgets.TextButton(this, 0, 0, "button", optionsCallback, this, 1, 0, 2, 1)
+        //     .setText("Options", textStyle)
+        //     .eventTextYAdjustment(3);
+
+        //   var column = new uiWidgets.Column(this, 200, 100);
+        //   column.addNode(buttonOne, paddingX=0, paddingY=10);
+        //   column.addNode(buttonTwo, paddingX=0, paddingY=10);
+        //   column.addNode(buttonThree, paddingX=0, paddingY=10);
+
+
         console.log('Initialized Map:', this.map);
         console.log('Initialized Roots:', this.roots);
 
@@ -219,74 +235,92 @@ export class MainScene extends Phaser.Scene {
 
     private playMovementSound(nextTile: Tile) {
         const wait = Math.floor(Math.random() * 10);
+
+        let soundsPlaying = 1;
+        if (this.rootGrassSound1?.isPlaying) soundsPlaying++;
+        if (this.rootGrassSound2?.isPlaying) soundsPlaying++;
+        if (this.rootGrassSound3?.isPlaying) soundsPlaying++;
+        if (this.rootSandSound1?.isPlaying) soundsPlaying++;
+        if (this.rootSandSound2?.isPlaying) soundsPlaying++;
+        if (this.rootSandSound3?.isPlaying) soundsPlaying++;
+        if (this.rootDirtSound1?.isPlaying) soundsPlaying++;
+        if (this.rootDirtSound2?.isPlaying) soundsPlaying++;
+        if (this.rootDirtSound3?.isPlaying) soundsPlaying++;
+        if (this.rootWaterSound1?.isPlaying) soundsPlaying++;
+        if (this.rootWaterSound2?.isPlaying) soundsPlaying++;
+        if (this.rootWaterSound3?.isPlaying) soundsPlaying++;
+        let volume = this.soundParam === 1 ? Math.random() * 0.7 + 0.3 - 0.0415 * soundsPlaying : 1;
+        if (volume > 1) volume = 1;
+        console.log(volume)
+
         setTimeout(() => {
             switch (nextTile.getTileType()) {
                 case TileType.GRASS:
-                        switch (this.grassSoundTurn) {
-                            case 0:
-                                this.rootGrassSound1 = this.sound.add('rootGrass1', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootGrassSound1.play();
-                                break;
-                            case 1:
-                                this.rootGrassSound2 = this.sound.add('rootGrass2', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootGrassSound2.play();
-                                break;
-                            default:
-                                this.rootGrassSound3 = this.sound.add('rootGrass3', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootGrassSound3.play();
-                                break;
-                        }
+                    switch (this.grassSoundTurn) {
+                        case 0:
+                            this.rootGrassSound1 = this.sound.add('rootGrass1', { volume });
+                            this.rootGrassSound1.play();
+                            break;
+                        case 1:
+                            this.rootGrassSound2 = this.sound.add('rootGrass2', { volume });
+                            this.rootGrassSound2.play();
+                            break;
+                        default:
+                            this.rootGrassSound3 = this.sound.add('rootGrass3', { volume });
+                            this.rootGrassSound3.play();
+                            break;
+                    }
                     this.grassSoundTurn = this.grassSoundTurn + 1 < 3 ? this.grassSoundTurn + 1 : 0;
                     break;
                 case TileType.SAND:
-                        switch (this.sandSoundTurn) {
-                            case 0:
-                                this.rootSandSound1 = this.sound.add('rootSand1', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootSandSound1.play();
-                                break;
-                            case 1:
-                                this.rootSandSound2 = this.sound.add('rootSand2', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootSandSound2.play();
-                                break;
-                            default:
-                                this.rootSandSound3 = this.sound.add('rootSand3', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootSandSound3.play();
-                                break;
-                        }
+                    switch (this.sandSoundTurn) {
+                        case 0:
+                            this.rootSandSound1 = this.sound.add('rootSand1', { volume });
+                            this.rootSandSound1.play();
+                            break;
+                        case 1:
+                            this.rootSandSound2 = this.sound.add('rootSand2', { volume });
+                            this.rootSandSound2.play();
+                            break;
+                        default:
+                            this.rootSandSound3 = this.sound.add('rootSand3', { volume });
+                            this.rootSandSound3.play();
+                            break;
+                    }
                     this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
                     break;
                 case TileType.SOIL:
-                        switch (this.dirtSoundTurn) {
-                            case 0:
-                                this.rootDirtSound1 = this.sound.add('rootDirt1', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootDirtSound1.play();
-                                break;
-                            case 1:
-                                this.rootDirtSound2 = this.sound.add('rootDirt2', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootDirtSound2.play();
-                                break;
-                            default:
-                                this.rootDirtSound3 = this.sound.add('rootDirt3', { volume: this.soundParam === 1 ? Math.random() : 1 });
-                                this.rootDirtSound3.play();
-                                break;
-                        }
+                    switch (this.dirtSoundTurn) {
+                        case 0:
+                            this.rootDirtSound1 = this.sound.add('rootDirt1', { volume });
+                            this.rootDirtSound1.play();
+                            break;
+                        case 1:
+                            this.rootDirtSound2 = this.sound.add('rootDirt2', { volume });
+                            this.rootDirtSound2.play();
+                            break;
+                        default:
+                            this.rootDirtSound3 = this.sound.add('rootDirt3', { volume });
+                            this.rootDirtSound3.play();
+                            break;
+                    }
                     this.dirtSoundTurn = this.dirtSoundTurn + 1 < 3 ? this.dirtSoundTurn + 1 : 0;
                     break;
                 default:
-                        switch (this.waterSoundTurn) {
-                            case 0:
-                                this.rootWaterSound1 = this.sound.add('rootWater1');
-                                this.rootWaterSound1.play();
-                                break;
-                            case 1:
-                                this.rootWaterSound2 = this.sound.add('rootWater2');
-                                this.rootWaterSound2.play();
-                                break;
-                            default:
-                                this.rootWaterSound3 = this.sound.add('rootWater3');
-                                this.rootWaterSound3.play();
-                                break;
-                        }
+                    switch (this.waterSoundTurn) {
+                        case 0:
+                            this.rootWaterSound1 = this.sound.add('rootWater1');
+                            this.rootWaterSound1.play();
+                            break;
+                        case 1:
+                            this.rootWaterSound2 = this.sound.add('rootWater2');
+                            this.rootWaterSound2.play();
+                            break;
+                        default:
+                            this.rootWaterSound3 = this.sound.add('rootWater3');
+                            this.rootWaterSound3.play();
+                            break;
+                    }
                     this.waterSoundTurn = this.waterSoundTurn + 1 < 3 ? this.waterSoundTurn + 1 : 0;
                     break;
             }
