@@ -7,10 +7,10 @@ export class MainScene extends Phaser.Scene {
     // Génère une map plus ou moins grande
     private tileMultiplier: number = 1;
     private levelToLoad = 'example-s' + this.tileMultiplier;
-    private backgroundTiles: number[][] = [];
-    private foregroundTiles: number[][] = [];
+    private backgroundTiles: (number | null)[][] = [];
+    private foregroundTiles: (number | null)[][] = [];
     private loadCount = 0;
-    private loadNeeded = 2;
+    private loadNeeded = 3;
     private loaded = false;
 
     constructor() {
@@ -27,24 +27,24 @@ export class MainScene extends Phaser.Scene {
             complete: (results: ParseResult<Record<string, unknown>>) => {
                 this.backgroundTiles = (results.data as unknown as (number | null)[][])
                     .map((arr: (number | null)[]) => arr.filter((val: number | null) => val !== null && val !== undefined))
-                    .filter(arr => arr.length > 0) as number[][];
+                    .filter(arr => arr.length > 0);
                 this.tick('background');
             }
         });
         // Load foreground
-        if (false)
-            parse(`assets/levels/${this.levelToLoad}-l1.csv`, {
-                download: true,
-                header: false,
-                dynamicTyping: true,
-                skipEmptyLines: true,
-                complete: (results: ParseResult<Record<string, unknown>>) => {
-                    this.foregroundTiles = (results.data as unknown as (number | null)[][])
-                        .map((arr: (number | null)[]) => arr.filter((val: number | null) => val !== null && val !== undefined))
-                        .filter(arr => arr.length > 0) as number[][];
-                    this.tick('foreground');
-                }
-            });
+        parse(`assets/levels/${this.levelToLoad}-l1.csv`, {
+            download: true,
+            header: false,
+            dynamicTyping: true,
+            skipEmptyLines: true,
+            complete: (results: ParseResult<Record<string, unknown>>) => {
+                this.foregroundTiles = (results.data as unknown as (number | null)[][])
+                    .map((arr: (number | null)[]) => arr.filter((val: number | null) => val !== null && val !== undefined))
+                    .filter(arr => arr.length > 0)
+                    .map((arr: (number | null)[]) => arr.map(val => val === -1 ? null : val))
+                this.tick('foreground');
+            }
+        });
 
         this.load.image("tiles", "assets/tilemaps/medievalTiles.png");
         this.tick('tiles');
@@ -67,7 +67,7 @@ export class MainScene extends Phaser.Scene {
             const layerZero = background.createLayer(0, "tiles", 0, 0);
         }
         if (!!this.foregroundTiles) {
-            const foreground = this.make.tilemap({ key: "foreground", tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT });
+            const foreground = this.make.tilemap({ data: this.foregroundTiles, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT });
             foreground.addTilesetImage("tiles");
             const layerOne = foreground.createLayer(1, "tiles", 0, 0);
         }
