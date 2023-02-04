@@ -203,7 +203,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private playMovementSound(nextTile: Tile) {
-        const wait = Math.floor(Math.random() * 100);
+        const wait = Math.floor(Math.random() * 10);
         setTimeout(() => {
             switch (nextTile.getTileType()) {
                 case TileType.GRASS:
