@@ -63,7 +63,8 @@ export class MainMenuScene extends Phaser.Scene {
 
   update(): void {
     if (!!this.startKey && this.startKey.isDown) {
-      this.scene.start('GameScene');
+      // this.scene.start('GameScene');
+      this.scene.start('MainScene');
     }
   }
 }
