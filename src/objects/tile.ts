@@ -61,18 +61,38 @@ export class Tile {
     private background: TileAsset;
     private foreground: TileAsset;
     private typeForBehavior: TileTypeForBehavior;
+    private typeForBehaviorWithoutRoots: TileTypeForBehavior;
     private backgroundSprite: Phaser.GameObjects.Sprite;
     private foregroundSprite: Phaser.GameObjects.Sprite;
     private obstacle: boolean;
 
     constructor(settings: {
         coords: Coord,
+        csvBackground: number,
         csvForeground: number,
-        csvBackground: number
     }) {
         this.coord = settings.coords;
         this.initTileTypeFromCSV(settings.csvBackground);
         this.initTileContentsFromCSV(settings.csvForeground);
+        this.obstacle = false;
+        switch (this.tile) {
+            case TileType.GRASS:
+                this.typeForBehavior = TileTypeForBehavior.GRASS;
+                this.typeForBehaviorWithoutRoots = TileTypeForBehavior.GRASS;
+                break;
+            case TileType.SOIL:
+                this.typeForBehavior = TileTypeForBehavior.SOIL;
+                this.typeForBehaviorWithoutRoots = TileTypeForBehavior.SOIL;
+                break;
+            case TileType.SAND:
+                this.typeForBehavior = TileTypeForBehavior.SAND;
+                this.typeForBehaviorWithoutRoots = TileTypeForBehavior.SAND;
+                break;
+            default:
+                this.typeForBehavior = TileTypeForBehavior.WATER;
+                this.typeForBehaviorWithoutRoots = TileTypeForBehavior.WATER;
+                break;
+        }
         if (this.contents !== TileContents.NOTHING) {
             this.obstacle = true;
             switch (this.contents) {
@@ -84,23 +104,6 @@ export class Tile {
                     break;
                 default:
                     this.typeForBehavior = TileTypeForBehavior.ROOTS;
-                    break;
-            }
-        }
-        else {
-            this.obstacle = false;
-            switch (this.tile) {
-                case TileType.GRASS:
-                    this.typeForBehavior = TileTypeForBehavior.GRASS;
-                    break;
-                case TileType.SOIL:
-                    this.typeForBehavior = TileTypeForBehavior.SOIL;
-                    break;
-                case TileType.SAND:
-                    this.typeForBehavior = TileTypeForBehavior.SAND;
-                    break;
-                default:
-                    this.typeForBehavior = TileTypeForBehavior.WATER;
                     break;
             }
         }
@@ -140,6 +143,10 @@ export class Tile {
 
     public getTileTypeForBehavior(): TileTypeForBehavior {
         return this.typeForBehavior;
+    }
+
+    public getTileTypeForBehaviorWithoutRoots(): TileTypeForBehavior {
+        return this.typeForBehaviorWithoutRoots;
     }
 
     public setIsObstacle(obstacle: boolean): void {
@@ -184,10 +191,12 @@ export class Tile {
         this.foreground = TileAsset.EMPTY;
         switch (csvCell) {
             case 0:
+                this.obstacle = true;
                 this.contents = TileContents.TREE
                 this.foreground = TileAsset.TREE
                 break;
             case 1:
+                this.obstacle = true;
                 this.contents = TileContents.ROCK
                 const random = Math.floor(Math.random() * 4);
                 switch (random) {
@@ -206,34 +215,42 @@ export class Tile {
                 }
                 break;
             case 2:
+                this.obstacle = true;
                 this.contents = TileContents.ROCK
                 this.foreground = TileAsset.ROCK1
                 break;
             case 3:
+                this.obstacle = true;
                 this.contents = TileContents.ROCK
                 this.foreground = TileAsset.ROCK2
                 break;
             case 4:
+                this.obstacle = true;
                 this.contents = TileContents.ROCK
                 this.foreground = TileAsset.ROCK3
                 break;
             case 5:
+                this.obstacle = true;
                 this.contents = TileContents.ROCK
                 this.foreground = TileAsset.ROCK4
                 break;
             case 10:
+                this.obstacle = true;
                 this.contents = TileContents.ROOTS_T
                 this.foreground = TileAsset.ROOTS_DC
                 break;
             case 11:
+                this.obstacle = true;
                 this.contents = TileContents.ROOTS_R
                 this.foreground = TileAsset.ROOTS_LC
                 break;
             case 12:
+                this.obstacle = true;
                 this.contents = TileContents.ROOTS_D
                 this.foreground = TileAsset.ROOTS_TC
                 break;
             case 13:
+                this.obstacle = true;
                 this.contents = TileContents.ROOTS_L
                 this.foreground = TileAsset.ROOTS_RC
                 break;

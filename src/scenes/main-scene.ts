@@ -8,7 +8,6 @@ export const TILE_HEIGHT = 128;
 
 export class MainScene extends Phaser.Scene {
     // Génère une map plus ou moins grande
-    private tileMultiplier: number = 1;
     private levelToLoad = 'example-s' + this.tileMultiplier;
     private mapWidth = this.tileMultiplier * 16;
     private mapHeight = this.tileMultiplier * 9;
@@ -43,8 +42,12 @@ export class MainScene extends Phaser.Scene {
     private rootGrassSound2: Phaser.Sound.BaseSound;
     private rootGrassSound3: Phaser.Sound.BaseSound;
     private grassSoundTurn = 0;
+    private rootWaterSound1: Phaser.Sound.BaseSound;
+    private rootWaterSound2: Phaser.Sound.BaseSound;
+    private rootWaterSound3: Phaser.Sound.BaseSound;
+    private waterSoundTurn = 0;
 
-    constructor() {
+    constructor(private tileMultiplier: number = 1) {
         super({ key: "MainScene" });
     }
 
@@ -89,8 +92,8 @@ export class MainScene extends Phaser.Scene {
             delay: 450,                // ms
             callback: () => this.simulationloop(),
             args: [],
-            loop: false,
-            repeat: 15,
+            loop: true,
+            repeat: 0,
             startAt: 0,
             timeScale: 1,
             paused: false
@@ -106,25 +109,25 @@ export class MainScene extends Phaser.Scene {
                 const currentTile = root.getCurrentTile();
                 let currentCoord = currentTile.getCoord();
                 let direction = root.getDirection();
-                let nextTile: Tile | undefined = this.getNextTile(currentCoord, direction, true);
-
-                if (i === 0)
-                    console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 103 quelle tuile après ? currentCoord: ${currentCoord.x}:${currentCoord.y}, direction: ${direction}, nextTileCoord: ${nextTile?.getCoord()?.x}:${nextTile?.getCoord()?.y}`);
+                let nextTile: Tile | undefined = this.getNextTile(currentCoord, direction, false);
 
                 // If there was a valid tile next
-                if (!!nextTile) {
+                if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
                     // Then if next tile is different that current one check where root should go according to its behavior
-                    if (currentTile.getTileTypeForBehavior() !== nextTile.getTileTypeForBehavior()) {
+                    if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
                         const behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
                         direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
-                        nextTile = this.getNextTile(currentCoord, direction, false);
-                        if (i === 0)
-                            console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 113 sur quelle tuile aller après ? behavior: ${behavior}, direction: ${direction}, nextTileCoord: ${nextTile?.getCoord()?.x}:${nextTile?.getCoord()?.y}`);
+                        nextTile = this.getNextTile(currentCoord, direction, true);
                     }
 
                     // Then move the root by updating the appropriate tiles
                     if (!!nextTile) {
                         const nextCoord = nextTile.getCoord();
+
+                        if (i === 0)
+                            console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 171 finalement ! coord: ${currentCoord.x}:${currentCoord.y}, next coord: ${nextCoord.x}:${nextCoord.y}, next obstacle: ${nextTile.isObstacle()}`)
+
+
                         const oldBackgroundSprite = nextTile.getBackgroundSprite();
                         const oldForegroundSprite = nextTile.getForegroundSprite();
                         nextTile = new Tile({
@@ -142,8 +145,10 @@ export class MainScene extends Phaser.Scene {
                         });
                         nextTile.setIsObstacle(true);
                         root.setDirection(direction);
+                        root.setPreviousTile(currentTile);
                         root.setCurrentTile(nextTile);
 
+                        this.map[currentCoord.y][currentCoord.x] = currentTile;
                         this.map[nextCoord.y][nextCoord.x] = nextTile;
 
                         oldForegroundSprite?.destroy();
@@ -189,9 +194,6 @@ export class MainScene extends Phaser.Scene {
                         currentTile.updateForeground(previousTileNewAsset);
                         currentTile.getForegroundSprite()?.destroy();
                         this.setForegroundSprite(currentCoord.x, currentCoord.y, currentTile);
-
-                        if (i === 0)
-                            console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 171 finalement ! previousTileNewAsset: ${previousTileNewAsset}, coord: ${currentCoord.x}:${currentCoord.y}, next coord: ${nextCoord.x}:${nextCoord.y}`)
 
                         this.playMovementSound(nextTile);
                     }
@@ -247,28 +249,28 @@ export class MainScene extends Phaser.Scene {
                     this.dirtSoundTurn = this.dirtSoundTurn + 1 < 3 ? this.dirtSoundTurn + 1 : 0;
                     break;
                 default:
-                    switch (this.sandSoundTurn) {
+                    switch (this.waterSoundTurn) {
                         case 0:
-                            this.rootSandSound1.play();
+                            this.rootWaterSound1.play();
                             break;
                         case 1:
-                            this.rootSandSound2.play();
+                            this.rootWaterSound2.play();
                             break;
                         default:
-                            this.rootSandSound3.play();
+                            this.rootWaterSound3.play();
                             break;
                     }
-                    this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
+                    this.waterSoundTurn = this.waterSoundTurn + 1 < 3 ? this.waterSoundTurn + 1 : 0;
                     break;
             }
         }, wait);
     }
 
-    private getNextTile(currentCoord: Coord, direction: Direction, allowObstacle: boolean) {
+    private getNextTile(currentCoord: Coord, direction: Direction, doObstacleBlockPath: boolean) {
         let nextCoord: Coord | undefined;
         let nextTile: Tile | undefined;
         let turn = 0;
-        while ((nextTile === undefined || (!allowObstacle && nextTile.isObstacle)) && turn < 4) {
+        while ((nextTile === undefined || (doObstacleBlockPath && nextTile.isObstacle())) && turn < 4) {
             switch (direction) {
                 case Direction.NORTH:
                     nextCoord = currentCoord.y > 0 ? new Coord(currentCoord.x, currentCoord.y - 1) : undefined;
@@ -360,6 +362,9 @@ export class MainScene extends Phaser.Scene {
         this.rootGrassSound1 = this.sound.add('rootGrass1');
         this.rootGrassSound2 = this.sound.add('rootGrass2');
         this.rootGrassSound3 = this.sound.add('rootGrass3');
+        this.rootWaterSound1 = this.sound.add('rootWater1');
+        this.rootWaterSound2 = this.sound.add('rootWater2');
+        this.rootWaterSound3 = this.sound.add('rootWater3');
     }
 
     private initCamera() {
@@ -414,6 +419,9 @@ export class MainScene extends Phaser.Scene {
         this.load.audio('rootSand1', 'assets/audio/Roots_sand_v1-001.mp3');
         this.load.audio('rootSand2', 'assets/audio/Roots_sand_v1-002.mp3');
         this.load.audio('rootSand3', 'assets/audio/Roots_sand_v1-003.mp3');
+        this.load.audio('rootWater1', 'assets/audio/Roots_water_v1-001.mp3');
+        this.load.audio('rootWater2', 'assets/audio/Roots_water_v1-002.mp3');
+        this.load.audio('rootWater3', 'assets/audio/Roots_water_v1-003.mp3');
         this.tick('Roots sounds');
     }
 

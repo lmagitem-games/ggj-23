@@ -23,9 +23,11 @@ export class Root {
     }
 
     public setCurrentTile(tile: Tile): void {
-        console.log(`Setting ${this.currentTile.getCoord().x}:${this.currentTile.getCoord().y} as old tile and ${tile.getCoord().x}:${tile.getCoord().y} as new`)
-        this.previousTile = this.currentTile;
         this.currentTile = tile;
+    }
+
+    public setPreviousTile(tile: Tile): void {
+        this.previousTile = tile;
     }
 
     public setDirection(direction: Direction): void {
