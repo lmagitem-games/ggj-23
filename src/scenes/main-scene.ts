@@ -201,64 +201,67 @@ export class MainScene extends Phaser.Scene {
     }
 
     private playMovementSound(nextTile: Tile) {
-        switch (nextTile.getTileType()) {
-            case TileType.GRASS:
-                switch (this.grassSoundTurn) {
-                    case 0:
-                        this.rootGrassSound1.play();
-                        break;
-                    case 1:
-                        this.rootGrassSound2.play();
-                        break;
-                    default:
-                        this.rootGrassSound3.play();
-                        break;
-                }
-                this.grassSoundTurn = this.grassSoundTurn + 1 < 3 ? this.grassSoundTurn + 1 : 0;
-                break;
-            case TileType.SAND:
-                switch (this.sandSoundTurn) {
-                    case 0:
-                        this.rootSandSound1.play();
-                        break;
-                    case 1:
-                        this.rootSandSound2.play();
-                        break;
-                    default:
-                        this.rootSandSound3.play();
-                        break;
-                }
-                this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
-                break;
-            case TileType.SOIL:
-                switch (this.dirtSoundTurn) {
-                    case 0:
-                        this.rootDirtSound1.play();
-                        break;
-                    case 1:
-                        this.rootDirtSound2.play();
-                        break;
-                    default:
-                        this.rootDirtSound3.play();
-                        break;
-                }
-                this.dirtSoundTurn = this.dirtSoundTurn + 1 < 3 ? this.dirtSoundTurn + 1 : 0;
-                break;
-            default:
-                switch (this.sandSoundTurn) {
-                    case 0:
-                        this.rootSandSound1.play();
-                        break;
-                    case 1:
-                        this.rootSandSound2.play();
-                        break;
-                    default:
-                        this.rootSandSound3.play();
-                        break;
-                }
-                this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
-                break;
-        }
+        const wait = Math.floor(Math.random() * 100);
+        setTimeout(() => {
+            switch (nextTile.getTileType()) {
+                case TileType.GRASS:
+                    switch (this.grassSoundTurn) {
+                        case 0:
+                            this.rootGrassSound1.play();
+                            break;
+                        case 1:
+                            this.rootGrassSound2.play();
+                            break;
+                        default:
+                            this.rootGrassSound3.play();
+                            break;
+                    }
+                    this.grassSoundTurn = this.grassSoundTurn + 1 < 3 ? this.grassSoundTurn + 1 : 0;
+                    break;
+                case TileType.SAND:
+                    switch (this.sandSoundTurn) {
+                        case 0:
+                            this.rootSandSound1.play();
+                            break;
+                        case 1:
+                            this.rootSandSound2.play();
+                            break;
+                        default:
+                            this.rootSandSound3.play();
+                            break;
+                    }
+                    this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
+                    break;
+                case TileType.SOIL:
+                    switch (this.dirtSoundTurn) {
+                        case 0:
+                            this.rootDirtSound1.play();
+                            break;
+                        case 1:
+                            this.rootDirtSound2.play();
+                            break;
+                        default:
+                            this.rootDirtSound3.play();
+                            break;
+                    }
+                    this.dirtSoundTurn = this.dirtSoundTurn + 1 < 3 ? this.dirtSoundTurn + 1 : 0;
+                    break;
+                default:
+                    switch (this.sandSoundTurn) {
+                        case 0:
+                            this.rootSandSound1.play();
+                            break;
+                        case 1:
+                            this.rootSandSound2.play();
+                            break;
+                        default:
+                            this.rootSandSound3.play();
+                            break;
+                    }
+                    this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
+                    break;
+            }
+        }, wait);
     }
 
     private getNextTile(currentCoord: Coord, direction: Direction, allowObstacle: boolean) {
