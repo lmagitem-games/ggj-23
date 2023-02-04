@@ -12,6 +12,7 @@ export class MainScene extends Phaser.Scene {
     private behaviorSelected = false;
 
     private tileMultiplier = 1;
+    private soundParam = 0;
     private levelToLoad = 'example-s' + this.tileMultiplier;
     private mapWidth = this.tileMultiplier * 16;
     private mapHeight = this.tileMultiplier * 9;
@@ -53,12 +54,13 @@ export class MainScene extends Phaser.Scene {
         super({ key: "MainScene" });
     }
 
-    public init(data: { tileMultiplier: number }): void {
-         this.tileMultiplier = data.tileMultiplier;
-         this.levelToLoad = 'example-s' + this.tileMultiplier;
-         this.mapWidth = this.tileMultiplier * 16;
-         this.mapHeight = this.tileMultiplier * 9;
-         this.initialized = true;
+    public init(data: { tileMultiplier: number, soundParam: number }): void {
+        this.tileMultiplier = data.tileMultiplier;
+        this.levelToLoad = 'example-s' + this.tileMultiplier;
+        this.mapWidth = this.tileMultiplier * 16;
+        this.mapHeight = this.tileMultiplier * 9;
+        this.soundParam = data.soundParam ?? this.soundParam;
+        this.initialized = true;
     }
 
     public preload(): void {
@@ -220,59 +222,75 @@ export class MainScene extends Phaser.Scene {
         setTimeout(() => {
             switch (nextTile.getTileType()) {
                 case TileType.GRASS:
-                    switch (this.grassSoundTurn) {
-                        case 0:
-                            this.rootGrassSound1.play();
-                            break;
-                        case 1:
-                            this.rootGrassSound2.play();
-                            break;
-                        default:
-                            this.rootGrassSound3.play();
-                            break;
-                    }
+                    if (this.soundParam !== 2 || !this.rootDirtSound1.isPlaying && !this.rootGrassSound2.isPlaying && !this.rootGrassSound3.isPlaying)
+                        switch (this.grassSoundTurn) {
+                            case 0:
+                                if (this.soundParam !== 1 || !this.rootGrassSound1.isPlaying)
+                                this.rootGrassSound1.play();
+                                break;
+                            case 1:
+                                if (this.soundParam !== 1 || !this.rootGrassSound2.isPlaying)
+                                this.rootGrassSound2.play();
+                                break;
+                            default:
+                                if (this.soundParam !== 1 || !this.rootGrassSound3.isPlaying)
+                                this.rootGrassSound3.play();
+                                break;
+                        }
                     this.grassSoundTurn = this.grassSoundTurn + 1 < 3 ? this.grassSoundTurn + 1 : 0;
                     break;
                 case TileType.SAND:
-                    switch (this.sandSoundTurn) {
-                        case 0:
-                            this.rootSandSound1.play();
-                            break;
-                        case 1:
-                            this.rootSandSound2.play();
-                            break;
-                        default:
-                            this.rootSandSound3.play();
-                            break;
-                    }
+                    if (this.soundParam !== 2 || !this.rootSandSound1.isPlaying && !this.rootSandSound2.isPlaying && !this.rootSandSound3.isPlaying)
+                        switch (this.sandSoundTurn) {
+                            case 0:
+                                if (this.soundParam !== 1 || !this.rootSandSound1.isPlaying)
+                                this.rootSandSound1.play();
+                                break;
+                            case 1:
+                                if (this.soundParam !== 1 || !this.rootSandSound2.isPlaying)
+                                this.rootSandSound2.play();
+                                break;
+                            default:
+                                if (this.soundParam !== 1 || !this.rootSandSound3.isPlaying)
+                                this.rootSandSound3.play();
+                                break;
+                        }
                     this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
                     break;
                 case TileType.SOIL:
-                    switch (this.dirtSoundTurn) {
-                        case 0:
-                            this.rootDirtSound1.play();
-                            break;
-                        case 1:
-                            this.rootDirtSound2.play();
-                            break;
-                        default:
-                            this.rootDirtSound3.play();
-                            break;
-                    }
+                    if (this.soundParam !== 2 || !this.rootDirtSound1.isPlaying && !this.rootDirtSound2.isPlaying && !this.rootDirtSound3.isPlaying)
+                        switch (this.dirtSoundTurn) {
+                            case 0:
+                                if (this.soundParam !== 1 || !this.rootDirtSound1.isPlaying)
+                                this.rootDirtSound1.play();
+                                break;
+                            case 1:
+                                if (this.soundParam !== 1 || !this.rootDirtSound2.isPlaying)
+                                this.rootDirtSound2.play();
+                                break;
+                            default:
+                                if (this.soundParam !== 1 || !this.rootDirtSound3.isPlaying)
+                                this.rootDirtSound3.play();
+                                break;
+                        }
                     this.dirtSoundTurn = this.dirtSoundTurn + 1 < 3 ? this.dirtSoundTurn + 1 : 0;
                     break;
                 default:
-                    switch (this.waterSoundTurn) {
-                        case 0:
-                            this.rootWaterSound1.play();
-                            break;
-                        case 1:
-                            this.rootWaterSound2.play();
-                            break;
-                        default:
-                            this.rootWaterSound3.play();
-                            break;
-                    }
+                    if (this.soundParam !== 2 || !this.rootWaterSound1.isPlaying && !this.rootWaterSound2.isPlaying && !this.rootWaterSound3.isPlaying)
+                        switch (this.waterSoundTurn) {
+                            case 0:
+                                if (this.soundParam !== 1 || !this.rootWaterSound1.isPlaying)
+                                this.rootWaterSound1.play();
+                                break;
+                            case 1:
+                                if (this.soundParam !== 1 || !this.rootWaterSound2.isPlaying)
+                                this.rootWaterSound2.play();
+                                break;
+                            default:
+                                if (this.soundParam !== 1 || !this.rootWaterSound3.isPlaying)
+                                this.rootWaterSound3.play();
+                                break;
+                        }
                     this.waterSoundTurn = this.waterSoundTurn + 1 < 3 ? this.waterSoundTurn + 1 : 0;
                     break;
             }

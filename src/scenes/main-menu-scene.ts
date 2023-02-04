@@ -6,6 +6,8 @@ export class MainMenuScene extends Phaser.Scene {
   private key3?: Phaser.Input.Keyboard.Key;
   private key4?: Phaser.Input.Keyboard.Key;
   private key5?: Phaser.Input.Keyboard.Key;
+  private key6?: Phaser.Input.Keyboard.Key;
+  private key7?: Phaser.Input.Keyboard.Key;
   private bitmapTexts: Phaser.GameObjects.BitmapText[] = [];
 
   constructor() {
@@ -29,6 +31,12 @@ export class MainMenuScene extends Phaser.Scene {
     );
     this.key5 = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.NUMPAD_FIVE
+    );
+    this.key6 = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.NUMPAD_SIX
+    );
+    this.key7 = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.NUMPAD_SEVEN
     );
 
     if (CONST.SCORE > CONST.HIGHSCORE) {
@@ -60,7 +68,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 2,
         'snakeFont',
-        '2 : PLAY MAP 2',
+        '2 : PLAY MAP 2 - full sounds',
         8
       )
     );
@@ -69,7 +77,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 14,
         'snakeFont',
-        '3 : PLAY MAP 3',
+        '3 : PLAY MAP 2 - current sound playing > wait',
         8
       )
     );
@@ -78,7 +86,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 26,
         'snakeFont',
-        '4 : PLAY MAP 4',
+        '4 : PLAY MAP 2 - any sound playing > wait',
         8
       )
     );
@@ -87,7 +95,25 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 38,
         'snakeFont',
-        '5 : PLAY MAP 5',
+        '5 : PLAY MAP 3',
+        8
+      )
+    );
+    this.bitmapTexts.push(
+      this.add.bitmapText(
+        this.sys.canvas.width / 2 - 52,
+        this.sys.canvas.height / 2 + 50,
+        'snakeFont',
+        '6 : PLAY MAP 4',
+        8
+      )
+    );
+    this.bitmapTexts.push(
+      this.add.bitmapText(
+        this.sys.canvas.width / 2 - 52,
+        this.sys.canvas.height / 2 + 62,
+        'snakeFont',
+        '7 : PLAY MAP 5',
         8
       )
     );
@@ -121,12 +147,18 @@ export class MainMenuScene extends Phaser.Scene {
       this.scene.start('MainScene', { tileMultiplier: 2 });
     }
     if (!!this.key3 && this.key3.isDown) {
-      this.scene.start('MainScene', { tileMultiplier: 3 });
+      this.scene.start('MainScene', { tileMultiplier: 2, soundParam: 1 });
     }
     if (!!this.key4 && this.key4.isDown) {
-      this.scene.start('MainScene', { tileMultiplier: 4 });
+      this.scene.start('MainScene', { tileMultiplier: 2, soundParam: 2 });
     }
     if (!!this.key5 && this.key5.isDown) {
+      this.scene.start('MainScene', { tileMultiplier: 3 });
+    }
+    if (!!this.key6 && this.key6.isDown) {
+      this.scene.start('MainScene', { tileMultiplier: 4 });
+    }
+    if (!!this.key7 && this.key7.isDown) {
       this.scene.start('MainScene', { tileMultiplier: 5 });
     }
   }
