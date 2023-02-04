@@ -12,7 +12,7 @@ export class MainMenuScene extends Phaser.Scene {
 
   init(): void {
     this.startKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.S
+      Phaser.Input.Keyboard.KeyCodes.R
     );
 
     if (CONST.SCORE > CONST.HIGHSCORE) {
@@ -35,7 +35,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 28,
         this.sys.canvas.height / 2 - 10,
         'snakeFont',
-        'S: PLAY',
+        'R : PLAY',
         8
       )
     );
@@ -45,7 +45,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 70,
         this.sys.canvas.height / 2 - 60,
         'snakeFont',
-        'S N A K E',
+        'Thirsty root',
         16
       )
     );
@@ -63,7 +63,6 @@ export class MainMenuScene extends Phaser.Scene {
 
   update(): void {
     if (!!this.startKey && this.startKey.isDown) {
-      // this.scene.start('GameScene');
       this.scene.start('MainScene');
     }
   }
