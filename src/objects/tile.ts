@@ -63,6 +63,7 @@ export class Tile {
     private typeForBehavior: TileTypeForBehavior;
     private backgroundSprite: Phaser.GameObjects.Sprite;
     private foregroundSprite: Phaser.GameObjects.Sprite;
+    private obstacle: boolean;
 
     constructor(settings: {
         coords: Coord,
@@ -73,6 +74,7 @@ export class Tile {
         this.initTileTypeFromCSV(settings.csvBackground);
         this.initTileContentsFromCSV(settings.csvForeground);
         if (this.contents !== TileContents.NOTHING) {
+            this.obstacle = true;
             switch (this.contents) {
                 case TileContents.TREE:
                     this.typeForBehavior = TileTypeForBehavior.TREE;
@@ -86,6 +88,7 @@ export class Tile {
             }
         }
         else {
+            this.obstacle = false;
             switch (this.tile) {
                 case TileType.GRASS:
                     this.typeForBehavior = TileTypeForBehavior.GRASS;
@@ -101,6 +104,10 @@ export class Tile {
                     break;
             }
         }
+    }
+
+    public isObstacle(): boolean {
+        return this.obstacle;
     }
 
     public getCoord(): Coord {
@@ -133,6 +140,10 @@ export class Tile {
 
     public getTileTypeForBehavior(): TileTypeForBehavior {
         return this.typeForBehavior;
+    }
+
+    public setIsObstacle(obstacle: boolean): void {
+        this.obstacle = obstacle;
     }
 
     public setBackgroundSprite(sprite: Phaser.GameObjects.Sprite): void {

@@ -31,9 +31,18 @@ export class MainScene extends Phaser.Scene {
     ]);
     private gameloopTimer: Phaser.Time.TimerEvent;
     private ambianceAudio: Phaser.Sound.BaseSound;
-    private rootDirtSound: Phaser.Sound.BaseSound;
-    private rootSandSound: Phaser.Sound.BaseSound;
-    private rootGrassSound: Phaser.Sound.BaseSound;
+    private rootDirtSound1: Phaser.Sound.BaseSound;
+    private rootDirtSound2: Phaser.Sound.BaseSound;
+    private rootDirtSound3: Phaser.Sound.BaseSound;
+    private dirtSoundTurn = 0;
+    private rootSandSound1: Phaser.Sound.BaseSound;
+    private rootSandSound2: Phaser.Sound.BaseSound;
+    private rootSandSound3: Phaser.Sound.BaseSound;
+    private sandSoundTurn = 0;
+    private rootGrassSound1: Phaser.Sound.BaseSound;
+    private rootGrassSound2: Phaser.Sound.BaseSound;
+    private rootGrassSound3: Phaser.Sound.BaseSound;
+    private grassSoundTurn = 0;
 
     constructor() {
         super({ key: "MainScene" });
@@ -80,8 +89,8 @@ export class MainScene extends Phaser.Scene {
             delay: 450,                // ms
             callback: () => this.simulationloop(),
             args: [],
-            loop: true,
-            repeat: 0,
+            loop: false,
+            repeat: 15,
             startAt: 0,
             timeScale: 1,
             paused: false
@@ -99,6 +108,9 @@ export class MainScene extends Phaser.Scene {
                 let direction = root.getDirection();
                 let nextTile: Tile | undefined = this.getNextTile(currentCoord, direction, true);
 
+                if (i === 0)
+                    console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 103 quelle tuile après ? currentCoord: ${currentCoord.x}:${currentCoord.y}, direction: ${direction}, nextTileCoord: ${nextTile?.getCoord()?.x}:${nextTile?.getCoord()?.y}`);
+
                 // If there was a valid tile next
                 if (!!nextTile) {
                     // Then if next tile is different that current one check where root should go according to its behavior
@@ -106,53 +118,69 @@ export class MainScene extends Phaser.Scene {
                         const behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
                         direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
                         nextTile = this.getNextTile(currentCoord, direction, false);
+                        if (i === 0)
+                            console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 113 sur quelle tuile aller après ? behavior: ${behavior}, direction: ${direction}, nextTileCoord: ${nextTile?.getCoord()?.x}:${nextTile?.getCoord()?.y}`);
                     }
 
                     // Then move the root by updating the appropriate tiles
                     if (!!nextTile) {
-                        const coord = nextTile.getCoord();
-                        const oldSprite = nextTile.getForegroundSprite();
-                        nextTile = new Tile({ coords: coord, csvBackground: nextTile.getTileType(), csvForeground: TileContents.ROOTS_L });
+                        const nextCoord = nextTile.getCoord();
+                        const oldBackgroundSprite = nextTile.getBackgroundSprite();
+                        const oldForegroundSprite = nextTile.getForegroundSprite();
+                        nextTile = new Tile({
+                            coords: nextCoord,
+                            csvBackground: nextTile.getTileType(),
+                            csvForeground:
+                                // Same column but next row (down)
+                                currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ? TileContents.ROOTS_D
+                                    // Same column but previous row (up)
+                                    : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ? TileContents.ROOTS_T
+                                        // Same row but next column (right)
+                                        : currentCoord.x > nextCoord.x && currentCoord.y === nextCoord.y ? TileContents.ROOTS_L
+                                            // Same row but previous column (left)
+                                            : TileContents.ROOTS_R
+                        });
+                        nextTile.setIsObstacle(true);
                         root.setDirection(direction);
                         root.setCurrentTile(nextTile);
 
-                        this.map[coord.y][coord.x] = nextTile;
+                        this.map[nextCoord.y][nextCoord.x] = nextTile;
 
-                        oldSprite?.destroy();
-                        this.setBackgroundSprite(coord.x, coord.y, nextTile);
-                        this.setForegroundSprite(coord.x, coord.y, nextTile);
+                        oldForegroundSprite?.destroy();
+                        nextTile.setBackgroundSprite(oldBackgroundSprite);
+                        this.setForegroundSprite(nextCoord.x, nextCoord.y, nextTile);
 
                         const previousTileNewAsset =
-                            // Same column but next row (down)
-                            currentCoord.x === coord.x && currentCoord.y > coord.y ?
+                            // Same column but down
+                            currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ?
                                 // Old one went from up
-                                currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_TD
+                                currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TD
                                     // Old one went from right
-                                    : currentTile.getTileContents() === TileContents.ROOTS_R ? TileAsset.ROOTS_DR
+                                    : currentTile.getTileContents() === TileContents.ROOTS_L ? TileAsset.ROOTS_DR
                                         // Old one went from left
                                         : TileAsset.ROOTS_DL
-                                // Same column but previous row (up)
-                                : currentCoord.x === coord.x && currentCoord.y > coord.y ?
+                                // Same column but up
+                                : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ?
                                     // Old one went from down
-                                    currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TD
+                                    currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_TD
                                         // Old one went from right
-                                        : currentTile.getTileContents() === TileContents.ROOTS_R ? TileAsset.ROOTS_TR
+                                        : currentTile.getTileContents() === TileContents.ROOTS_L ? TileAsset.ROOTS_TR
                                             // Old one went from left
                                             : TileAsset.ROOTS_TL
-                                    // Same row but next column (right)
-                                    : currentCoord.x > coord.x && currentCoord.y === coord.y ?
+                                    // Same row but right
+                                    : currentCoord.x < nextCoord.x && currentCoord.y === nextCoord.y ?
                                         // Old one went from down
-                                        currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_DR
+                                        currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_DR
                                             // Old one went from up
-                                            : currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_TR
+                                            : currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TR
                                                 // Old one went from left
                                                 : TileAsset.ROOTS_LR
-                                        // Same row but previous column (left)
+                                        // Same row but left
                                         :
                                         // Old one went from down
-                                        currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_DL
+                                        currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_DL
                                             // Old one went from up
-                                            : currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_TL
+                                            : currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TL
                                                 // Old one went from right
                                                 : TileAsset.ROOTS_LR;
 
@@ -162,31 +190,82 @@ export class MainScene extends Phaser.Scene {
                         currentTile.getForegroundSprite()?.destroy();
                         this.setForegroundSprite(currentCoord.x, currentCoord.y, currentTile);
 
-                        switch (nextTile.getTileType()) {
-                            case TileType.GRASS:
-                                this.rootGrassSound.play();
-                                break;
-                            case TileType.SAND:
-                                this.rootSandSound.play();
-                                break;
-                            case TileType.SOIL:
-                                this.rootDirtSound.play();
-                                break;
-                            default:
-                                this.rootSandSound.play();
-                                break;
-                        }
+                        if (i === 0)
+                            console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 171 finalement ! previousTileNewAsset: ${previousTileNewAsset}, coord: ${currentCoord.x}:${currentCoord.y}, next coord: ${nextCoord.x}:${nextCoord.y}`)
+
+                        this.playMovementSound(nextTile);
                     }
                 }
             }
         };
     }
 
+    private playMovementSound(nextTile: Tile) {
+        switch (nextTile.getTileType()) {
+            case TileType.GRASS:
+                switch (this.grassSoundTurn) {
+                    case 0:
+                        this.rootGrassSound1.play();
+                        break;
+                    case 1:
+                        this.rootGrassSound2.play();
+                        break;
+                    default:
+                        this.rootGrassSound3.play();
+                        break;
+                }
+                this.grassSoundTurn = this.grassSoundTurn + 1 < 3 ? this.grassSoundTurn + 1 : 0;
+                break;
+            case TileType.SAND:
+                switch (this.sandSoundTurn) {
+                    case 0:
+                        this.rootSandSound1.play();
+                        break;
+                    case 1:
+                        this.rootSandSound2.play();
+                        break;
+                    default:
+                        this.rootSandSound3.play();
+                        break;
+                }
+                this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
+                break;
+            case TileType.SOIL:
+                switch (this.dirtSoundTurn) {
+                    case 0:
+                        this.rootDirtSound1.play();
+                        break;
+                    case 1:
+                        this.rootDirtSound2.play();
+                        break;
+                    default:
+                        this.rootDirtSound3.play();
+                        break;
+                }
+                this.dirtSoundTurn = this.dirtSoundTurn + 1 < 3 ? this.dirtSoundTurn + 1 : 0;
+                break;
+            default:
+                switch (this.sandSoundTurn) {
+                    case 0:
+                        this.rootSandSound1.play();
+                        break;
+                    case 1:
+                        this.rootSandSound2.play();
+                        break;
+                    default:
+                        this.rootSandSound3.play();
+                        break;
+                }
+                this.sandSoundTurn = this.sandSoundTurn + 1 < 3 ? this.sandSoundTurn + 1 : 0;
+                break;
+        }
+    }
+
     private getNextTile(currentCoord: Coord, direction: Direction, allowObstacle: boolean) {
         let nextCoord: Coord | undefined;
         let nextTile: Tile | undefined;
         let turn = 0;
-        while ((nextTile === undefined || (!allowObstacle && nextTile.getTileContents() !== TileContents.NOTHING)) && turn < 4) {
+        while ((nextTile === undefined || (!allowObstacle && nextTile.isObstacle)) && turn < 4) {
             switch (direction) {
                 case Direction.NORTH:
                     nextCoord = currentCoord.y > 0 ? new Coord(currentCoord.x, currentCoord.y - 1) : undefined;
@@ -201,7 +280,7 @@ export class MainScene extends Phaser.Scene {
                     nextCoord = currentCoord.x < this.mapWidth - 1 ? new Coord(currentCoord.x - 1, currentCoord.y) : undefined;
                     break;
             }
-            nextTile = !!nextCoord ? this.map[nextCoord.x][nextCoord.y] : undefined;
+            nextTile = !!nextCoord ? this.map[nextCoord.y][nextCoord.x] : undefined;
             direction = direction + 1 <= 3 ? direction + 1 : 0;
             turn++;
         }
@@ -239,6 +318,7 @@ export class MainScene extends Phaser.Scene {
                                 : contents === TileContents.ROOTS_D ? Direction.SOUTH
                                     : Direction.WEST;
                         this.roots.push(new Root(tile, direction, this.rootsBehavior));
+                        tile.setIsObstacle(true);
                     }
                 }
 
@@ -268,9 +348,15 @@ export class MainScene extends Phaser.Scene {
     private initAudio() {
         this.ambianceAudio = this.sound.add('ambiance');
         this.ambianceAudio.play({ loop: true });
-        this.rootDirtSound = this.sound.add('rootDirt');
-        this.rootSandSound = this.sound.add('rootSand');
-        this.rootGrassSound = this.sound.add('rootGrass');
+        this.rootDirtSound1 = this.sound.add('rootDirt1');
+        this.rootDirtSound2 = this.sound.add('rootDirt2');
+        this.rootDirtSound3 = this.sound.add('rootDirt3');
+        this.rootSandSound1 = this.sound.add('rootSand1');
+        this.rootSandSound2 = this.sound.add('rootSand2');
+        this.rootSandSound3 = this.sound.add('rootSand3');
+        this.rootGrassSound1 = this.sound.add('rootGrass1');
+        this.rootGrassSound2 = this.sound.add('rootGrass2');
+        this.rootGrassSound3 = this.sound.add('rootGrass3');
     }
 
     private initCamera() {
@@ -316,9 +402,15 @@ export class MainScene extends Phaser.Scene {
     private loadAudio() {
         this.load.audio('ambiance', 'assets/audio/AMB.mp3');
         this.tick('Ambiance track');
-        this.load.audio('rootDirt', 'assets/audio/Roots_Dirt_1.mp3');
-        this.load.audio('rootGrass', 'assets/audio/Roots_Grass_1.mp3');
-        this.load.audio('rootSand', 'assets/audio/Roots_Sand_1.mp3');
+        this.load.audio('rootDirt1', 'assets/audio/Roots_dirt_v1-001.mp3');
+        this.load.audio('rootDirt2', 'assets/audio/Roots_dirt_v1-002.mp3');
+        this.load.audio('rootDirt3', 'assets/audio/Roots_dirt_v1-003.mp3');
+        this.load.audio('rootGrass1', 'assets/audio/Roots_grass_v1-001.mp3');
+        this.load.audio('rootGrass2', 'assets/audio/Roots_grass_v1-002.mp3');
+        this.load.audio('rootGrass3', 'assets/audio/Roots_grass_v1-003.mp3');
+        this.load.audio('rootSand1', 'assets/audio/Roots_sand_v1-001.mp3');
+        this.load.audio('rootSand2', 'assets/audio/Roots_sand_v1-002.mp3');
+        this.load.audio('rootSand3', 'assets/audio/Roots_sand_v1-003.mp3');
         this.tick('Roots sounds');
     }
 
