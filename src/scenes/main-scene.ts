@@ -19,12 +19,17 @@ export class MainScene extends Phaser.Scene {
 
     constructor() {
         super({ key: "MainScene" });
+
     }
+
+
 
     public preload(): void {
         this.loadLevel();
         this.loadSpritesheet();
     }
+
+
 
     public create(): void {
         const mapWidth = this.tileMultiplier * 16; // 64
@@ -111,6 +116,35 @@ export class MainScene extends Phaser.Scene {
                 this.cameras.main.setZoom(0.1042);
                 break;
         }
+
+        
+        // create button to choice direction
+        var buttonUP = this.add.text(100, 1000, 'Up', {font : "65px", align : "center"})
+            .setOrigin(0.5)         
+            .setPadding(10) 
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive(new Phaser.Geom.Rectangle(0, 0, 128, 128), Phaser.Geom.Rectangle.Contains)
+            .on('pointerdown', () => console.log('pressedUp'))
+
+        buttonUP.input.enabled = true
+        this.add.text(300, 1000, 'Down', {font : "65px",  align : "center"})
+            .setOrigin(0.5)         
+            .setPadding(10) 
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => console.log('pressed down'))
+        this.add.text(600, 1000, 'Right', {font : "65px",  align : "center"})
+            .setOrigin(0.5)         
+            .setPadding(10) 
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => console.log('pressedRight'))
+        this.add.text(900, 1000, 'Left', {font : "65px",  align : "center"})
+            .setOrigin(0.5)         
+            .setPadding(10) 
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => console.log('PressedLeft'))
     }
 
     private tick(name: string): void {
