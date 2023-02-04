@@ -254,12 +254,9 @@ export class MainScene extends Phaser.Scene {
         if (this.rootWaterSound1?.isPlaying) soundsPlaying++;
         if (this.rootWaterSound2?.isPlaying) soundsPlaying++;
         if (this.rootWaterSound3?.isPlaying) soundsPlaying++;
-        let volume = this.soundParam === 1 ? Math.random() * 0.2 + 0.7 - 0.1 * soundsPlaying
-            : this.soundParam === 2 ? 1 - 0.1 * soundsPlaying : 1;
+        let volume = 1 - 0.1 * soundsPlaying;
         if (volume > 1) volume = 1;
-        if (this.soundParam === 1 && volume > 0.8) volume = 0.8;
-        if (this.soundParam === 1 && volume < 0.33) volume = 0.33;
-        if (this.soundParam === 2 && volume < 0.5) volume = 0.5;
+        if (volume < 0.5) volume = 0.5;
         console.log(volume)
 
         setTimeout(() => {
@@ -468,15 +465,15 @@ export class MainScene extends Phaser.Scene {
     private loadAudio() {
         this.load.audio('ambiance', 'assets/audio/AMB.mp3');
         this.tick('Ambiance track');
-        this.load.audio('rootDirt1', this.soundParam === 3 ? 'assets/audio/Roots_dirt_v2bis-001.mp3' : 'assets/audio/Roots_dirt_v2-001.mp3');
-        this.load.audio('rootDirt2', this.soundParam === 3 ? 'assets/audio/Roots_dirt_v2bis-002.mp3' : 'assets/audio/Roots_dirt_v2-002.mp3');
-        this.load.audio('rootDirt3', this.soundParam === 3 ? 'assets/audio/Roots_dirt_v2bis-003.mp3' : 'assets/audio/Roots_dirt_v2-003.mp3');
+        this.load.audio('rootDirt1', 'assets/audio/Roots_dirt_v2-001.mp3');
+        this.load.audio('rootDirt2', 'assets/audio/Roots_dirt_v2-002.mp3');
+        this.load.audio('rootDirt3', 'assets/audio/Roots_dirt_v2-003.mp3');
         this.load.audio('rootGrass1', 'assets/audio/Roots_grass_v1-001.mp3');
         this.load.audio('rootGrass2', 'assets/audio/Roots_grass_v1-002.mp3');
         this.load.audio('rootGrass3', 'assets/audio/Roots_grass_v1-003.mp3');
-        this.load.audio('rootSand1', 'assets/audio/Roots_sand_v1-001.mp3');
-        this.load.audio('rootSand2', 'assets/audio/Roots_sand_v1-002.mp3');
-        this.load.audio('rootSand3', 'assets/audio/Roots_sand_v1-003.mp3');
+        this.load.audio('rootSand1', 'assets/audio/Roots_sand_v2-001.mp3');
+        this.load.audio('rootSand2', 'assets/audio/Roots_sand_v2-002.mp3');
+        this.load.audio('rootSand3', 'assets/audio/Roots_sand_v2-003.mp3');
         this.load.audio('rootWater1', 'assets/audio/Roots_water_v1-001.mp3');
         this.load.audio('rootWater2', 'assets/audio/Roots_water_v1-002.mp3');
         this.load.audio('rootWater3', 'assets/audio/Roots_water_v1-003.mp3');
