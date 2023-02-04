@@ -11,6 +11,8 @@ export class MainScene extends Phaser.Scene {
     private loaded = false;
     private behaviorSelected = false;
 
+    private turn = 0;
+
     private tileMultiplier = 1;
     private soundParam = 0;
     private levelToLoad = 'example-s' + this.tileMultiplier;
@@ -91,7 +93,7 @@ export class MainScene extends Phaser.Scene {
         console.log('Initialized Roots:', this.roots);
 
         this.gameloopTimer = this.time.addEvent({
-            delay: 300,
+            delay: 150,
             callback: () => this.simulationloop(),
             args: [],
             loop: true,
@@ -103,8 +105,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     private buildMenu() {
-        this.add.text(this.mapWidth / 2, this.mapHeight / 2, 'Down', { font: "65px", align: "center" })
-            .setOrigin(0.5)
+        this.add.text(this.mapWidth, this.mapHeight, 'Down', { font: "65px", align: "center" })
+            .setOrigin(0)
             .setPadding(10)
             .setDepth(50)
             .setStyle({ backgroundColor: '#111' })
@@ -124,45 +126,56 @@ export class MainScene extends Phaser.Scene {
             for (let i = 0; i < this.roots?.length; i++) {
                 const root = this.roots[i];
 
-                // Check where root will go if it goes straight ahead
-                const currentTile = root.getCurrentTile();
-                let currentCoord = currentTile.getCoord();
-                let direction = root.getDirection();
-                let nextTile: Tile | undefined = this.getNextTile(currentCoord, direction, false);
+                if (this.turn % 2 === 0) {
+                    // Check where root will go if it goes straight ahead
+                    const currentTile = root.getCurrentTile();
+                    let currentCoord = currentTile.getCoord();
+                    let direction = root.getDirection();
+                    let nextTile: Tile | undefined = this.getNextTile(currentCoord, direction, false);
 
-                // If there was a valid tile next
-                if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
-                    // Then if next tile is different that current one check where root should go according to its behavior
-                    if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
-                        const behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
-                        direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
-                        nextTile = this.getNextTile(currentCoord, direction, true);
+                    // If there was a valid tile next
+                    if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
+                        // Then if next tile is different that current one check where root should go according to its behavior
+                        if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
+                            const behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
+                            direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
+                            nextTile = this.getNextTile(currentCoord, direction, true);
+                        }
+
+                        // Then move the root by updating the appropriate tiles
+                        if (!!nextTile && !nextTile.isObstacle()) {
+                            const nextCoord = nextTile.getCoord();
+                            nextTile = new Tile({
+                                coords: nextCoord,
+                                csvBackground: nextTile.getTileType(),
+                                csvForeground:
+                                    // Same column but next row (down)
+                                    currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ? TileContents.ROOTS_D
+                                        // Same column but previous row (up)
+                                        : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ? TileContents.ROOTS_T
+                                            // Same row but next column (right)
+                                            : currentCoord.x > nextCoord.x && currentCoord.y === nextCoord.y ? TileContents.ROOTS_L
+                                                // Same row but previous column (left)
+                                                : TileContents.ROOTS_R
+                            });
+                            nextTile.setIsObstacle(true);
+                            root.setNextDirection(direction);
+                            root.setNextTile(nextTile);
+
+                            this.playMovementSound(nextTile);
+                        }
                     }
+                } else {
+                    const currentTile = root.getCurrentTile();
+                    const currentCoord = currentTile.getCoord();
+                    const nextTile = root.getNextTile();
+                    const oldBackgroundSprite = nextTile?.getBackgroundSprite();
+                    const oldForegroundSprite = nextTile?.getForegroundSprite();
+                    const nextCoord = nextTile?.getCoord();
+                    const direction = root.getNextDirection();
 
-                    // Then move the root by updating the appropriate tiles
-                    if (!!nextTile && !nextTile.isObstacle()) {
-                        const nextCoord = nextTile.getCoord();
-
-                        if (i === 0)
-                            console.log(`${new Date().getUTCSeconds()}:${new Date().getMilliseconds()} - 171 finalement ! coord: ${currentCoord.x}:${currentCoord.y}, next coord: ${nextCoord.x}:${nextCoord.y}, next obstacle: ${nextTile.isObstacle()}`)
-
-
-                        const oldBackgroundSprite = nextTile.getBackgroundSprite();
-                        const oldForegroundSprite = nextTile.getForegroundSprite();
-                        nextTile = new Tile({
-                            coords: nextCoord,
-                            csvBackground: nextTile.getTileType(),
-                            csvForeground:
-                                // Same column but next row (down)
-                                currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ? TileContents.ROOTS_D
-                                    // Same column but previous row (up)
-                                    : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ? TileContents.ROOTS_T
-                                        // Same row but next column (right)
-                                        : currentCoord.x > nextCoord.x && currentCoord.y === nextCoord.y ? TileContents.ROOTS_L
-                                            // Same row but previous column (left)
-                                            : TileContents.ROOTS_R
-                        });
-                        nextTile.setIsObstacle(true);
+                    if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
+                        root.setNextTile(undefined);
                         root.setDirection(direction);
                         root.setPreviousTile(currentTile);
                         root.setCurrentTile(nextTile);
@@ -213,12 +226,11 @@ export class MainScene extends Phaser.Scene {
                         currentTile.updateForeground(previousTileNewAsset);
                         currentTile.getForegroundSprite()?.destroy();
                         this.setForegroundSprite(currentCoord.x, currentCoord.y, currentTile);
-
-                        this.playMovementSound(nextTile);
                     }
                 }
             }
         };
+        this.turn++;
     }
 
     private playMovementSound(nextTile: Tile) {
@@ -241,6 +253,7 @@ export class MainScene extends Phaser.Scene {
             : this.soundParam === 2 ? 1 - 0.1 * soundsPlaying : 1;
         if (volume > 1) volume = 1;
         if (this.soundParam === 1 && volume > 0.8) volume = 0.8;
+        if (this.soundParam === 1 && volume < 0.33) volume = 0.33;
         if (this.soundParam === 2 && volume < 0.5) volume = 0.5;
         console.log(volume)
 

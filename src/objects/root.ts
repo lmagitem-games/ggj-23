@@ -16,30 +16,24 @@ export enum Direction {
 export class Root {
     private previousTile: Tile;
     private currentTile: Tile;
+    private nextTile: Tile;
+    private nextDirection: Direction;
 
     constructor(private startingTile: Tile, private direction: Direction, private behavior: Map<TileTypeForBehavior, Behavior>) {
         this.previousTile = startingTile;
         this.currentTile = startingTile;
     }
 
-    public setCurrentTile(tile: Tile): void {
-        this.currentTile = tile;
-    }
-
-    public setPreviousTile(tile: Tile): void {
-        this.previousTile = tile;
-    }
-
-    public setDirection(direction: Direction): void {
-        this.direction = direction;
+    public getPreviousTile(): Tile {
+        return this.previousTile;
     }
 
     public getCurrentTile(): Tile {
         return this.currentTile;
     }
 
-    public getPreviousTile(): Tile {
-        return this.previousTile;
+    public getNextTile(): Tile {
+        return this.nextTile;
     }
 
     public getStartingTile(): Tile {
@@ -50,7 +44,31 @@ export class Root {
         return this.direction;
     }
 
+    public getNextDirection(): Direction {
+        return this.direction;
+    }
+
     public getBehaviorFor(tile: TileTypeForBehavior): Behavior {
         return this.behavior.get(tile);
+    }
+
+    public setPreviousTile(tile: Tile): void {
+        this.previousTile = tile;
+    }
+
+    public setCurrentTile(tile: Tile): void {
+        this.currentTile = tile;
+    }
+
+    public setNextTile(tile: Tile): void {
+        this.nextTile = tile;
+    }
+
+    public setDirection(direction: Direction): void {
+        this.direction = direction;
+    }
+
+    public setNextDirection(direction: Direction): void {
+        this.nextDirection = direction;
     }
 }
