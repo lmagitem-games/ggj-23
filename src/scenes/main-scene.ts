@@ -7,7 +7,11 @@ export const TILE_WIDTH = 128;
 export const TILE_HEIGHT = 128;
 
 export class MainScene extends Phaser.Scene {
-    // Génère une map plus ou moins grande
+    private initialized = false;
+    private loaded = false;
+    private behaviorSelected = false;
+
+    private tileMultiplier = 1;
     private levelToLoad = 'example-s' + this.tileMultiplier;
     private mapWidth = this.tileMultiplier * 16;
     private mapHeight = this.tileMultiplier * 9;
@@ -17,8 +21,6 @@ export class MainScene extends Phaser.Scene {
     private roots: Root[] = [];
     private loadCount = 0;
     private loadNeeded = 5;
-    private loaded = false;
-    private behaviorSelected = false;
     private rootsBehavior: Map<TileTypeForBehavior, Behavior> = new Map([
         [TileTypeForBehavior.GRASS, Behavior.AHEAD],
         [TileTypeForBehavior.SOIL, Behavior.AHEAD],
@@ -47,11 +49,22 @@ export class MainScene extends Phaser.Scene {
     private rootWaterSound3: Phaser.Sound.BaseSound;
     private waterSoundTurn = 0;
 
-    constructor(private tileMultiplier: number = 1) {
+    constructor() {
         super({ key: "MainScene" });
     }
 
+    public init(data: { tileMultiplier: number }): void {
+         this.tileMultiplier = data.tileMultiplier;
+         this.levelToLoad = 'example-s' + this.tileMultiplier;
+         this.mapWidth = this.tileMultiplier * 16;
+         this.mapHeight = this.tileMultiplier * 9;
+         this.initialized = true;
+    }
+
     public preload(): void {
+        const failsafe = Date.now() + 3000;
+        while (!this.initialized && failsafe > Date.now()) { }
+
         this.loadLevel();
         this.loadSpritesheet();
         this.loadAudio();
@@ -121,7 +134,7 @@ export class MainScene extends Phaser.Scene {
                     }
 
                     // Then move the root by updating the appropriate tiles
-                    if (!!nextTile) {
+                    if (!!nextTile && !nextTile.isObstacle()) {
                         const nextCoord = nextTile.getCoord();
 
                         if (i === 0)
