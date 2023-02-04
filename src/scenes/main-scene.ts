@@ -1,7 +1,7 @@
 import { parse, ParseResult } from 'papaparse';
 import { Coord } from '../objects/coord';
 import { Behavior, Direction, Root } from '../objects/root';
-import { Tile, TileAsset, TileContents, TileTypeForBehavior } from '../objects/tile';
+import { Tile, TileAsset, TileContents, TileType, TileTypeForBehavior } from '../objects/tile';
 
 export const TILE_WIDTH = 128;
 export const TILE_HEIGHT = 128;
@@ -17,7 +17,7 @@ export class MainScene extends Phaser.Scene {
     private map: Tile[][] = [];
     private roots: Root[] = [];
     private loadCount = 0;
-    private loadNeeded = 3;
+    private loadNeeded = 5;
     private loaded = false;
     private behaviorSelected = false;
     private rootsBehavior: Map<TileTypeForBehavior, Behavior> = new Map([
@@ -30,6 +30,10 @@ export class MainScene extends Phaser.Scene {
         [TileTypeForBehavior.ROOTS, Behavior.LEFT],
     ]);
     private gameloopTimer: Phaser.Time.TimerEvent;
+    private ambianceAudio: Phaser.Sound.BaseSound;
+    private rootDirtSound: Phaser.Sound.BaseSound;
+    private rootSandSound: Phaser.Sound.BaseSound;
+    private rootGrassSound: Phaser.Sound.BaseSound;
 
     constructor() {
         super({ key: "MainScene" });
@@ -38,6 +42,7 @@ export class MainScene extends Phaser.Scene {
     public preload(): void {
         this.loadLevel();
         this.loadSpritesheet();
+        this.loadAudio();
     }
 
     public create(): void {
@@ -49,31 +54,20 @@ export class MainScene extends Phaser.Scene {
         this.initTileAnimations();
         this.initMap();
         this.initCamera();
+        this.initAudio();
 
         // create button to choice direction
-        var buttonUP = this.add.text(100, 1000, 'Up', { font: "65px", align: "center" })
+        this.add.text(100, 1000, 'Down', { font: "65px", align: "center" })
             .setOrigin(0.5)
             .setPadding(10)
-            .setStyle({ backgroundColor: '#111' })
-            .setInteractive(new Phaser.Geom.Rectangle(0, 0, 128, 128), Phaser.Geom.Rectangle.Contains)
-            .on('pointerdown', () => console.log('pressedUp'))
-
-        buttonUP.input.enabled = true
-        this.add.text(300, 1000, 'Down', { font: "65px", align: "center" })
-            .setOrigin(0.5)
-            .setPadding(10)
+            .setDepth(50)
             .setStyle({ backgroundColor: '#111' })
             .setInteractive()
             .on('pointerdown', () => console.log('pressed down'));
-        this.add.text(600, 1000, 'Right', { font: "65px", align: "center" })
+        this.add.text(900, 1000, 'Launch simulation', { font: "65px", align: "center" })
             .setOrigin(0.5)
             .setPadding(10)
-            .setStyle({ backgroundColor: '#111' })
-            .setInteractive()
-            .on('pointerdown', () => console.log(this));
-        this.add.text(900, 1000, 'Left', { font: "65px", align: "center" })
-            .setOrigin(0.5)
-            .setPadding(10)
+            .setDepth(50)
             .setStyle({ backgroundColor: '#111' })
             .setInteractive()
             .on('pointerdown', () => this.behaviorSelected = true);
@@ -167,6 +161,21 @@ export class MainScene extends Phaser.Scene {
                         currentTile.updateForeground(previousTileNewAsset);
                         currentTile.getForegroundSprite()?.destroy();
                         this.setForegroundSprite(currentCoord.x, currentCoord.y, currentTile);
+
+                        switch (nextTile.getTileType()) {
+                            case TileType.GRASS:
+                                this.rootGrassSound.play();
+                                break;
+                            case TileType.SAND:
+                                this.rootSandSound.play();
+                                break;
+                            case TileType.SOIL:
+                                this.rootDirtSound.play();
+                                break;
+                            default:
+                                this.rootSandSound.play();
+                                break;
+                        }
                     }
                 }
             }
@@ -256,6 +265,14 @@ export class MainScene extends Phaser.Scene {
         tile.setForegroundSprite(foregroundSprite);
     }
 
+    private initAudio() {
+        this.ambianceAudio = this.sound.add('ambiance');
+        this.ambianceAudio.play({ loop: true });
+        this.rootDirtSound = this.sound.add('rootDirt');
+        this.rootSandSound = this.sound.add('rootSand');
+        this.rootGrassSound = this.sound.add('rootGrass');
+    }
+
     private initCamera() {
         this.cameras.main.setBounds(0, 0, TILE_WIDTH * this.mapWidth, TILE_HEIGHT * this.mapHeight);
         this.cameras.main.centerOn(TILE_WIDTH * this.mapWidth / 2, TILE_HEIGHT * this.mapHeight / 2);
@@ -294,6 +311,15 @@ export class MainScene extends Phaser.Scene {
     private loadSpritesheet() {
         this.load.spritesheet('tiles', 'assets/tilemaps/medievalTiles.png', { frameWidth: 128, frameHeight: 128 });
         this.tick('Tiles');
+    }
+
+    private loadAudio() {
+        this.load.audio('ambiance', 'assets/audio/AMB.mp3');
+        this.tick('Ambiance track');
+        this.load.audio('rootDirt', 'assets/audio/Roots_Dirt_1.mp3');
+        this.load.audio('rootGrass', 'assets/audio/Roots_Grass_1.mp3');
+        this.load.audio('rootSand', 'assets/audio/Roots_Sand_1.mp3');
+        this.tick('Roots sounds');
     }
 
     private loadLevel() {
