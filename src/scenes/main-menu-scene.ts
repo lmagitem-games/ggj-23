@@ -18,25 +18,25 @@ export class MainMenuScene extends Phaser.Scene {
 
   init(): void {
     this.key1 = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_ONE
+      Phaser.Input.Keyboard.KeyCodes.A
     );
     this.key2 = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_TWO
+      Phaser.Input.Keyboard.KeyCodes.Z
     );
     this.key3 = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_THREE
+      Phaser.Input.Keyboard.KeyCodes.E
     );
     this.key4 = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_FOUR
+      Phaser.Input.Keyboard.KeyCodes.R
     );
     this.key5 = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_FIVE
+      Phaser.Input.Keyboard.KeyCodes.T
     );
     this.key6 = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_SIX
+      Phaser.Input.Keyboard.KeyCodes.Y
     );
     this.key7 = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.NUMPAD_SEVEN
+      Phaser.Input.Keyboard.KeyCodes.U
     );
 
     if (CONST.SCORE > CONST.HIGHSCORE) {
@@ -59,7 +59,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 - 10,
         'snakeFont',
-        '1 : PLAY MAP 1',
+        'A : PLAY MAP 1',
         8
       )
     );
@@ -68,7 +68,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 2,
         'snakeFont',
-        '2 : PLAY MAP 2 - normal dirt v2',
+        'Z : PLAY MAP 2',
         8
       )
     );
@@ -77,7 +77,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 14,
         'snakeFont',
-        '3 : PLAY MAP 2 - dirt v2 + modulation aleatoire',
+        'E : PLAY MAP 2',
         8
       )
     );
@@ -86,7 +86,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 26,
         'snakeFont',
-        '4 : PLAY MAP 2 - dirt v2 + modulation entre .5 et 1',
+        'R : PLAY MAP 2',
         8
       )
     );
@@ -95,7 +95,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 38,
         'snakeFont',
-        '5 : PLAY MAP 3',
+        'T : PLAY MAP 3',
         8
       )
     );
@@ -104,7 +104,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 50,
         'snakeFont',
-        '6 : PLAY MAP 4',
+        'Y : PLAY MAP 4',
         8
       )
     );
@@ -113,7 +113,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 62,
         'snakeFont',
-        '7 : PLAY MAP 5',
+        'U : PLAY MAP 5',
         8
       )
     );

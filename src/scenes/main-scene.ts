@@ -25,7 +25,7 @@ export class MainScene extends Phaser.Scene {
     private map: Tile[][] = [];
     private roots: Root[] = [];
     private loadCount = 0;
-    private loadNeeded = 5;
+    private loadNeeded = 6;
     private rootsBehavior: Map<TileTypeForBehavior, Behavior> = new Map([
         [TileTypeForBehavior.GRASS, Behavior.AHEAD],
         [TileTypeForBehavior.SOIL, Behavior.AHEAD],
@@ -75,6 +75,7 @@ export class MainScene extends Phaser.Scene {
 
         this.loadLevel();
         this.loadSpritesheet();
+        this.loadUI();
         this.loadAudio();
     }
 
@@ -109,15 +110,11 @@ export class MainScene extends Phaser.Scene {
     }
 
     private buildMenu() {
-        console.log(this.mapTileWidth)
-        this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Down', { font: "65px", align: "center" })
-            .setOrigin(0.5)
-            .setPadding(10)
-            .setDepth(50)
-            .setStyle({ backgroundColor: '#111' })
-            .setInteractive()
-            .on('pointerdown', () => console.log('pressed down'));
-        this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Launch simulation', { font: "65px", align: "center" })
+        const arrow = this.add.sprite(0, 0, 'grey-left-arrow');
+        const ui = this.add.container(this.mapPixelWidth / 2, this.mapPixelHeight / 2, [arrow]);
+        ui.setDepth(50);
+
+        this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2 + 300, 'Launch simulation', { font: "65px", align: "center" })
             .setOrigin(0.5)
             .setPadding(10)
             .setDepth(50)
@@ -460,6 +457,16 @@ export class MainScene extends Phaser.Scene {
     private loadSpritesheet() {
         this.load.spritesheet('tiles', 'assets/tilemaps/medievalTiles.png', { frameWidth: 128, frameHeight: 128 });
         this.tick('Tiles');
+    }
+
+    private loadUI() {
+		this.load.image('grey-left-arrow', 'assets/ui/grey_sliderLeft.png');
+		this.load.image('grey-right-arrow', 'assets/ui/grey_sliderRight.png');
+		this.load.image('grey-panel', 'assets/ui/grey_sliderRight.png');
+		this.load.image('green-left-arrow', 'assets/ui/green_sliderLeft.png');
+		this.load.image('green-right-arrow', 'assets/ui/green_sliderRight.png');
+		this.load.image('green-button', 'assets/ui/green_button03.png');
+        this.tick('UI');
     }
 
     private loadAudio() {
