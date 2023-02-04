@@ -3,9 +3,8 @@
     "target": "ES6",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "noImplicitAny": true,
-    "strict": true
+    "noImplicitAny": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "node_modules/phaser3-rex-plugins-types"],
   "exclude": ["node_modules"]
 }
