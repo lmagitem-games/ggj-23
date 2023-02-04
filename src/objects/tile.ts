@@ -11,7 +11,20 @@ export enum TileContents {
     NOTHING = -1,
     TREE = 0,
     ROCK = 1,
-    ROOTS = 10
+    ROOTS_T = 10,
+    ROOTS_R = 11,
+    ROOTS_D = 12,
+    ROOTS_L = 13
+}
+
+export enum TileForBehavior {
+    GRASS,
+    SOIL,
+    SAND,
+    WATER,
+    TREE,
+    ROCK,
+    ROOTS,
 }
 
 export enum TileAsset {

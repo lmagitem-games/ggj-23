@@ -12,6 +12,7 @@ export class MainScene extends Phaser.Scene {
     private backgroundTiles: (number | null)[][] = [];
     private foregroundTiles: (number | null)[][] = [];
     private map: Tile[][] = [];
+    // private roots;
     private loadCount = 0;
     private loadNeeded = 3;
     private loaded = false;
@@ -41,6 +42,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     public update(): void {
+        // Pour chaque tile, regarder la tile qui arrive dans la direction où elle va au prochain tour
+
+        // Appliquer le comportement prévu pour ce type de tile
+
 
     }
 
