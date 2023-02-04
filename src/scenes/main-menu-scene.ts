@@ -68,7 +68,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 2,
         'snakeFont',
-        '2 : PLAY MAP 2 - full sounds',
+        '2 : PLAY MAP 2 - normal dirt v2',
         8
       )
     );
@@ -77,7 +77,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 14,
         'snakeFont',
-        '3 : PLAY MAP 2 - current sound playing > wait',
+        '3 : PLAY MAP 2 - dirt v2 + modulation aleatoire',
         8
       )
     );
@@ -86,7 +86,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.sys.canvas.width / 2 - 52,
         this.sys.canvas.height / 2 + 26,
         'snakeFont',
-        '4 : PLAY MAP 2 - any sound playing > wait',
+        '4 : PLAY MAP 2 - normal dirt v2 bis',
         8
       )
     );
