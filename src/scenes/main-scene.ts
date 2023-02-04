@@ -16,8 +16,10 @@ export class MainScene extends Phaser.Scene {
     private tileMultiplier = 1;
     private soundParam = 0;
     private levelToLoad = 'example-s' + this.tileMultiplier;
-    private mapWidth = this.tileMultiplier * 16;
-    private mapHeight = this.tileMultiplier * 9;
+    private mapTileWidth = this.tileMultiplier * 16;
+    private mapPixelWidth = this.tileMultiplier * 16 * TILE_WIDTH;
+    private mapTileHeight = this.tileMultiplier * 9;
+    private mapPixelHeight = this.tileMultiplier * 9 * TILE_HEIGHT;
     private backgroundTiles: (number | null)[][] = [];
     private foregroundTiles: (number | null)[][] = [];
     private map: Tile[][] = [];
@@ -59,8 +61,10 @@ export class MainScene extends Phaser.Scene {
     public init(data: { tileMultiplier: number, soundParam: number }): void {
         this.tileMultiplier = data.tileMultiplier;
         this.levelToLoad = 'example-s' + this.tileMultiplier;
-        this.mapWidth = this.tileMultiplier * 16;
-        this.mapHeight = this.tileMultiplier * 9;
+        this.mapTileWidth = this.tileMultiplier * 16;
+        this.mapPixelWidth = this.tileMultiplier * 16 * TILE_WIDTH;
+        this.mapTileHeight = this.tileMultiplier * 9;
+        this.mapPixelHeight = this.tileMultiplier * 9 * TILE_HEIGHT;
         this.soundParam = data.soundParam ?? this.soundParam;
         this.initialized = true;
     }
@@ -105,14 +109,15 @@ export class MainScene extends Phaser.Scene {
     }
 
     private buildMenu() {
-        this.add.text(this.mapWidth, this.mapHeight, 'Down', { font: "65px", align: "center" })
-            .setOrigin(0)
+        console.log(this.mapTileWidth)
+        this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Down', { font: "65px", align: "center" })
+            .setOrigin(0.5)
             .setPadding(10)
             .setDepth(50)
             .setStyle({ backgroundColor: '#111' })
             .setInteractive()
             .on('pointerdown', () => console.log('pressed down'));
-        this.add.text(900, 1000, 'Launch simulation', { font: "65px", align: "center" })
+        this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Launch simulation', { font: "65px", align: "center" })
             .setOrigin(0.5)
             .setPadding(10)
             .setDepth(50)
@@ -344,10 +349,10 @@ export class MainScene extends Phaser.Scene {
                     nextCoord = currentCoord.x > 0 ? new Coord(currentCoord.x + 1, currentCoord.y) : undefined;
                     break;
                 case Direction.SOUTH:
-                    nextCoord = currentCoord.y < this.mapHeight - 1 ? new Coord(currentCoord.x, currentCoord.y + 1) : undefined;
+                    nextCoord = currentCoord.y < this.mapTileHeight - 1 ? new Coord(currentCoord.x, currentCoord.y + 1) : undefined;
                     break;
                 case Direction.WEST:
-                    nextCoord = currentCoord.x < this.mapWidth - 1 ? new Coord(currentCoord.x - 1, currentCoord.y) : undefined;
+                    nextCoord = currentCoord.x < this.mapTileWidth - 1 ? new Coord(currentCoord.x - 1, currentCoord.y) : undefined;
                     break;
             }
             nextTile = !!nextCoord ? this.map[nextCoord.y][nextCoord.x] : undefined;
@@ -421,8 +426,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     private initCamera() {
-        this.cameras.main.setBounds(0, 0, TILE_WIDTH * this.mapWidth, TILE_HEIGHT * this.mapHeight);
-        this.cameras.main.centerOn(TILE_WIDTH * this.mapWidth / 2, TILE_HEIGHT * this.mapHeight / 2);
+        this.cameras.main.setBounds(0, 0, TILE_WIDTH * this.mapTileWidth, TILE_HEIGHT * this.mapTileHeight);
+        this.cameras.main.centerOn(TILE_WIDTH * this.mapTileWidth / 2, TILE_HEIGHT * this.mapTileHeight / 2);
 
         switch (this.tileMultiplier) {
             case 1:
