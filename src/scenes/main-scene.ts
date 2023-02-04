@@ -102,7 +102,7 @@ export class MainScene extends Phaser.Scene {
         console.log('Initialized Roots:', this.roots);
 
         this.gameloopTimer = this.time.addEvent({
-            delay: 450,                // ms
+            delay: 300,
             callback: () => this.simulationloop(),
             args: [],
             loop: true,
