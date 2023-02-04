@@ -17,7 +17,7 @@ export enum TileContents {
     ROOTS_L = 13
 }
 
-export enum TileForBehavior {
+export enum TileTypeForBehavior {
     GRASS,
     SOIL,
     SAND,
@@ -60,6 +60,7 @@ export class Tile {
     private contents: TileContents;
     private background: TileAsset;
     private foreground: TileAsset;
+    private typeForBehavior: TileTypeForBehavior;
     private backgroundSprite: Phaser.GameObjects.Sprite;
     private foregroundSprite: Phaser.GameObjects.Sprite;
 
@@ -71,14 +72,35 @@ export class Tile {
         this.coord = settings.coords;
         this.initTileTypeFromCSV(settings.csvBackground);
         this.initTileContentsFromCSV(settings.csvForeground);
-    }
-
-    public setBackgroundSprite(sprite: Phaser.GameObjects.Sprite): void {
-        this.backgroundSprite = sprite;
-    }
-
-    public setForegroundSprite(sprite: Phaser.GameObjects.Sprite): void {
-        this.foregroundSprite = sprite;
+        if (this.contents !== TileContents.NOTHING) {
+            switch (this.contents) {
+                case TileContents.TREE:
+                    this.typeForBehavior = TileTypeForBehavior.TREE;
+                    break;
+                case TileContents.ROCK:
+                    this.typeForBehavior = TileTypeForBehavior.ROCK;
+                    break;
+                default:
+                    this.typeForBehavior = TileTypeForBehavior.ROOTS;
+                    break;
+            }
+        }
+        else {
+            switch (this.tile) {
+                case TileType.GRASS:
+                    this.typeForBehavior = TileTypeForBehavior.GRASS;
+                    break;
+                case TileType.SOIL:
+                    this.typeForBehavior = TileTypeForBehavior.SOIL;
+                    break;
+                case TileType.SAND:
+                    this.typeForBehavior = TileTypeForBehavior.SAND;
+                    break;
+                default:
+                    this.typeForBehavior = TileTypeForBehavior.WATER;
+                    break;
+            }
+        }
     }
 
     public getCoord(): Coord {
@@ -107,6 +129,22 @@ export class Tile {
 
     public getForegroundSprite(): Phaser.GameObjects.Sprite {
         return this.foregroundSprite;
+    }
+
+    public getTileTypeForBehavior(): TileTypeForBehavior {
+        return this.typeForBehavior;
+    }
+
+    public setBackgroundSprite(sprite: Phaser.GameObjects.Sprite): void {
+        this.backgroundSprite = sprite;
+    }
+
+    public setForegroundSprite(sprite: Phaser.GameObjects.Sprite): void {
+        this.foregroundSprite = sprite;
+    }
+
+    public updateForeground(asset: TileAsset): void {
+        this.foreground = asset;
     }
 
     private initTileTypeFromCSV(csvCell: number) {
@@ -171,6 +209,22 @@ export class Tile {
             case 5:
                 this.contents = TileContents.ROCK
                 this.foreground = TileAsset.ROCK4
+                break;
+            case 10:
+                this.contents = TileContents.ROOTS_T
+                this.foreground = TileAsset.ROOTS_DC
+                break;
+            case 11:
+                this.contents = TileContents.ROOTS_R
+                this.foreground = TileAsset.ROOTS_LC
+                break;
+            case 12:
+                this.contents = TileContents.ROOTS_D
+                this.foreground = TileAsset.ROOTS_TC
+                break;
+            case 13:
+                this.contents = TileContents.ROOTS_L
+                this.foreground = TileAsset.ROOTS_RC
                 break;
         }
     }
