@@ -348,7 +348,7 @@ export class MainScene extends Phaser.Scene {
                     if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
                         // Then if next tile is different that current one check where root should go according to its behavior
                         if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
-                            this.playMovementSound(nextTile.getTileTypeForBehavior());
+                            this.playMovementSound(nextTile.getTileTypeForBehavior(), i);
 
                             let behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
                             direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
@@ -453,135 +453,159 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private playMovementSound(nextTile: TileTypeForBehavior) {
-        let soundsPlaying = 0;
-        if (this.sound1?.isPlaying) soundsPlaying++;
-        if (this.sound2?.isPlaying) soundsPlaying++;
-        if (this.sound3?.isPlaying) soundsPlaying++;
-        if (this.sound4?.isPlaying) soundsPlaying++;
-
-        if (soundsPlaying < 3) {
-            let volume = 1 - 0.15 * (soundsPlaying + 1);
+    private playMovementSound(nextTile: TileTypeForBehavior, i: number) {
+        if (i < 4 || nextTile === TileTypeForBehavior.WATER || nextTile === TileTypeForBehavior.ROCK) {
+            let soundsPlaying = 0;
+            if (this.sound1?.isPlaying) soundsPlaying++;
+            if (this.sound2?.isPlaying) soundsPlaying++;
+            if (this.sound3?.isPlaying) soundsPlaying++;
+            if (this.sound4?.isPlaying) soundsPlaying++;
+            let volume = 1 - Math.random() * 0.1 * (soundsPlaying + 1);
             if (volume > 1) volume = 1;
             if (volume < 0.5) volume = 0.5;
+
             switch (nextTile) {
                 case TileTypeForBehavior.GRASS:
-                    switch (soundsPlaying) {
+                    switch (i) {
                         case 0:
+                            this.sound1?.stop();
                             this.sound1 = this.sound.add('rootGrass1', { volume });
-                            this.sound1.play();
+                            this.sound1?.play();
                             break;
                         case 1:
+                            this.sound2?.stop();
                             this.sound2 = this.sound.add('rootGrass2', { volume });
-                            this.sound2.play();
+                            this.sound2?.play();
                             break;
                         case 2:
+                            this.sound3?.stop();
                             this.sound3 = this.sound.add('rootGrass3', { volume });
-                            this.sound3.play();
+                            this.sound3?.play();
                             break;
                         default:
+                            this.sound4?.stop();
                             this.sound4 = this.sound.add('rootGrass2', { volume });
-                            this.sound4.play();
+                            this.sound4?.play();
                             break;
                     }
                     break;
                 case TileTypeForBehavior.SAND:
-                    switch (soundsPlaying) {
+                    switch (i) {
                         case 0:
+                            this.sound1?.stop();
                             this.sound1 = this.sound.add('rootSand-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound1.play();
+                            this.sound1?.play();
                             break;
                         case 1:
+                            this.sound2?.stop();
                             this.sound2 = this.sound.add('rootSand-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound2.play();
+                            this.sound2?.play();
                             break;
                         case 2:
+                            this.sound3?.stop();
                             this.sound3 = this.sound.add('rootSand-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound3.play();
+                            this.sound3?.play();
                             break;
                         default:
+                            this.sound4?.stop();
                             this.sound4 = this.sound.add('rootSand-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound4.play();
+                            this.sound4?.play();
                             break;
                     }
                     break;
                 case TileTypeForBehavior.SOIL:
-                    switch (soundsPlaying) {
+                    switch (i) {
                         case 0:
+                            this.sound1?.stop();
                             this.sound1 = this.sound.add('rootDirt-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound1.play();
+                            this.sound1?.play();
                             break;
                         case 1:
+                            this.sound2?.stop();
                             this.sound2 = this.sound.add('rootDirt-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound2.play();
+                            this.sound2?.play();
                             break;
                         case 2:
+                            this.sound3?.stop();
                             this.sound3 = this.sound.add('rootDirt-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound3.play();
+                            this.sound3?.play();
                             break;
                         default:
+                            this.sound4?.stop();
                             this.sound4 = this.sound.add('rootDirt-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound4.play();
+                            this.sound4?.play();
                             break;
                     }
                     break;
                 case TileTypeForBehavior.WATER:
-                    switch (soundsPlaying) {
+                    switch (i % 4) {
                         case 0:
+                            this.sound1?.stop();
                             this.sound1 = this.sound.add('rootWater1', { volume });
-                            this.sound1.play();
+                            this.sound1?.play();
                             break;
                         case 1:
+                            this.sound2?.stop();
                             this.sound2 = this.sound.add('rootWater2', { volume });
-                            this.sound2.play();
+                            this.sound2?.play();
                             break;
                         case 2:
+                            this.sound3?.stop();
                             this.sound3 = this.sound.add('rootWater3', { volume });
-                            this.sound3.play();
+                            this.sound3?.play();
                             break;
                         default:
+                            this.sound4?.stop();
                             this.sound4 = this.sound.add('rootWater2', { volume });
-                            this.sound4.play();
+                            this.sound4?.play();
                             break;
                     }
                     break;
                 case TileTypeForBehavior.ROCK:
-                    switch (soundsPlaying) {
+                    switch (i % 4) {
                         case 0:
+                            this.sound1?.stop();
                             this.sound1 = this.sound.add('rootRock1', { volume });
-                            this.sound1.play();
+                            this.sound1?.play();
                             break;
                         case 1:
+                            this.sound2?.stop();
                             this.sound2 = this.sound.add('rootRock2', { volume });
-                            this.sound2.play();
+                            this.sound2?.play();
                             break;
                         case 2:
+                            this.sound3?.stop();
                             this.sound3 = this.sound.add('rootRock3', { volume });
-                            this.sound3.play();
+                            this.sound3?.play();
                             break;
                         default:
+                            this.sound4?.stop();
                             this.sound4 = this.sound.add('rootRock4', { volume });
-                            this.sound4.play();
+                            this.sound4?.play();
                             break;
                     }
                     break;
                 default:
-                    switch (soundsPlaying) {
+                    switch (i) {
                         case 0:
+                            this.sound1?.stop();
                             this.sound1 = this.sound.add('rootDirt-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound1.play();
+                            this.sound1?.play();
                             break;
                         case 1:
+                            this.sound2?.stop();
                             this.sound2 = this.sound.add('rootDirt-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound2.play();
+                            this.sound2?.play();
                             break;
                         case 2:
+                            this.sound3?.stop();
                             this.sound3 = this.sound.add('rootDirt-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound3.play();
+                            this.sound3?.play();
                             break;
                         default:
+                            this.sound4?.stop();
                             this.sound4 = this.sound.add('rootDirt-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                            this.sound4.play();
+                            this.sound4?.play();
                             break;
                     }
                     break;
