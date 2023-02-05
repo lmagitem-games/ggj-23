@@ -18,13 +18,13 @@ export enum TileContents {
 }
 
 export enum TileTypeForBehavior {
-    GRASS,
-    SOIL,
-    SAND,
-    WATER,
-    TREE,
-    ROCK,
-    ROOTS,
+    GRASS = "GRASS",
+    SOIL = "SOIL",
+    SAND = "SAND",
+    WATER = "WATER",
+    TREE = "TREE",
+    ROCK = "ROCK",
+    ROOTS = "ROOTS",
 }
 
 export enum TileAsset {

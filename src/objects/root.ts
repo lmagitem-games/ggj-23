@@ -50,7 +50,7 @@ export class Root {
     }
 
     public getNextDirection(): Direction {
-        return this.direction;
+        return this.nextDirection;
     }
 
     public getBehaviorFor(tile: TileTypeForBehavior): Behavior {

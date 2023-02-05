@@ -317,10 +317,12 @@ export class MainScene extends Phaser.Scene {
                     if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
                         // Then if next tile is different that current one check where root should go according to its behavior
                         if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
-                            const behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
+                           let behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
                             direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
                             nextTile = this.getNextTile(currentCoord, direction, true);
-                        }
+                            behavior = root.getBehaviorFor(nextTile?.getTileTypeForBehavior()) || 0;
+                            direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
+                       }
 
                         // Then move the root by updating the appropriate tiles
                         if (!!nextTile && !nextTile.isObstacle()) {
@@ -515,7 +517,7 @@ export class MainScene extends Phaser.Scene {
     private setSelected(
         direction: Behavior,
         tile: TileTypeForBehavior,
-         obj: {
+        obj: {
             leftArrow?: Phaser.GameObjects.Sprite,
             topArrow?: Phaser.GameObjects.Sprite,
             rightArrow?: Phaser.GameObjects.Sprite,
