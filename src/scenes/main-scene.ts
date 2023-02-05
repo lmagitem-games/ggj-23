@@ -312,10 +312,10 @@ export class MainScene extends Phaser.Scene {
 
                     // If there was a valid tile next
                     if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
+                        this.playMovementSound(nextTile.getTileTypeForBehavior(), i);
+
                         // Then if next tile is different that current one check where root should go according to its behavior
                         if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
-                            this.playMovementSound(nextTile.getTileTypeForBehavior(), i);
-
                             let behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
                             direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
                             nextTile = this.getNextTile(currentCoord, direction, true);
