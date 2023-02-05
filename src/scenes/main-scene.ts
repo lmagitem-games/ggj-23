@@ -163,6 +163,7 @@ export class MainScene extends Phaser.Scene {
         menuSprites.push(this.behaviorInputs.grass.leftArrow = this.add.sprite(leftColumn - 50 * scale, firstRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
+            .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.GRASS, this.behaviorInputs.grass)));
         menuSprites.push(this.behaviorInputs.grass.topArrow = this.add.sprite(leftColumn, firstRow - 50 * scale, 'grey-top-arrow')
             .setScale(scale)
