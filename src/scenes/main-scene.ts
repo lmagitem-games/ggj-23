@@ -168,16 +168,12 @@ export class MainScene extends Phaser.Scene {
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.AHEAD, TileTypeForBehavior.GRASS, this.behaviorInputs.grass));
         this.behaviorInputs.grass.rightArrow = this.add.sprite(leftColumn + 50 * scale, firstRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.GRASS, this.behaviorInputs.grass));
         this.behaviorInputs.grass.panel = this.add.sprite(leftColumn, firstRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50);
@@ -191,23 +187,17 @@ export class MainScene extends Phaser.Scene {
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.SOIL, this.behaviorInputs.soil));
         this.behaviorInputs.soil.topArrow = this.add.sprite(leftColumn, secondRow - 50 * scale, 'grey-top-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.AHEAD, TileTypeForBehavior.SOIL, this.behaviorInputs.soil));
         this.behaviorInputs.soil.rightArrow = this.add.sprite(leftColumn + 50 * scale, secondRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.SOIL, this.behaviorInputs.soil));
         this.behaviorInputs.soil.panel = this.add.sprite(leftColumn, secondRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50);
@@ -221,23 +211,17 @@ export class MainScene extends Phaser.Scene {
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.SAND, this.behaviorInputs.sand));
         this.behaviorInputs.sand.topArrow = this.add.sprite(leftColumn, thirdRow - 50 * scale, 'grey-top-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.AHEAD, TileTypeForBehavior.SAND, this.behaviorInputs.sand));
         this.behaviorInputs.sand.rightArrow = this.add.sprite(leftColumn + 50 * scale, thirdRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.SAND, this.behaviorInputs.sand));
         this.behaviorInputs.sand.panel = this.add.sprite(leftColumn, thirdRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50);
@@ -251,16 +235,12 @@ export class MainScene extends Phaser.Scene {
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.ROCK, this.behaviorInputs.rocks));
         this.behaviorInputs.rocks.rightArrow = this.add.sprite(rightColumn + 50 * scale, firstRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.ROCK, this.behaviorInputs.rocks));
         this.behaviorInputs.rocks.panel = this.add.sprite(rightColumn, firstRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50);
@@ -274,16 +254,12 @@ export class MainScene extends Phaser.Scene {
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.TREE, this.behaviorInputs.trees));
         this.behaviorInputs.trees.rightArrow = this.add.sprite(rightColumn + 50 * scale, secondRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.TREE, this.behaviorInputs.trees));
         this.behaviorInputs.trees.panel = this.add.sprite(rightColumn, secondRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50);
@@ -297,16 +273,12 @@ export class MainScene extends Phaser.Scene {
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.ROOTS, this.behaviorInputs.roots));
         this.behaviorInputs.roots.rightArrow = this.add.sprite(rightColumn + 50 * scale, thirdRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
-            .on('pointerdown', () => {
-                console.log('pointerdown');
-            });
+            .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.ROOTS, this.behaviorInputs.roots));
         this.behaviorInputs.roots.panel = this.add.sprite(rightColumn, thirdRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50);
@@ -552,12 +524,9 @@ export class MainScene extends Phaser.Scene {
         obj.selected = direction;
         this.rootsBehavior.set(tile, direction);
 
-        // Set sprite of all arrows to grey
-        obj.leftArrow.setTexture('grey-left-arrow');
-        obj.topArrow.setTexture('green-left-arrow');
-        obj.rightArrow.setTexture('green-left-arrow');
-        // Set sprite of selected arrow to green
-        obj.leftArrow.setTexture('green-left-arrow');
+        obj.leftArrow.setTexture(`${direction === Behavior.LEFT ? 'green' : 'grey'}-left-arrow`);
+        obj.topArrow?.setTexture(`${direction === Behavior.AHEAD ? 'green' : 'grey'}-top-arrow`);
+        obj.rightArrow.setTexture(`${direction === Behavior.RIGHT ? 'green' : 'grey'}-right-arrow`);
     }
 
     private initMap() {
