@@ -468,9 +468,9 @@ export class MainScene extends Phaser.Scene {
                 if (this.sound2?.isPlaying) soundsPlaying++;
                 if (this.sound3?.isPlaying) soundsPlaying++;
                 if (this.sound4?.isPlaying) soundsPlaying++;
-                let volume = 1 - Math.random() * 0.15 * (soundsPlaying + 1);
-                if (volume > 1) volume = 1;
-                if (volume < 0.5) volume = 0.5;
+                let volume = 0.7 - Math.random() * 0.15 * (soundsPlaying + 1);
+                if (volume > 0.7) volume = 0.7;
+                if (volume < 0.4) volume = 0.4;
 
                 switch (nextTile) {
                     case TileTypeForBehavior.GRASS:
@@ -573,22 +573,22 @@ export class MainScene extends Phaser.Scene {
                         switch (i % 4) {
                             case 0:
                                 this.sound1?.stop();
-                                this.sound1 = this.sound.add('rootRock1', { volume: 0.8 });
+                                this.sound1 = this.sound.add('rootRock1', { volume: volume - 0.1 });
                                 this.sound1?.play();
                                 break;
                             case 1:
                                 this.sound2?.stop();
-                                this.sound2 = this.sound.add('rootRock2', { volume: 0.8 });
+                                this.sound2 = this.sound.add('rootRock2', { volume: volume - 0.1 });
                                 this.sound2?.play();
                                 break;
                             case 2:
                                 this.sound3?.stop();
-                                this.sound3 = this.sound.add('rootRock3', { volume: 0.8 });
+                                this.sound3 = this.sound.add('rootRock3', { volume: volume - 0.1 });
                                 this.sound3?.play();
                                 break;
                             default:
                                 this.sound4?.stop();
-                                this.sound4 = this.sound.add('rootRock4', { volume: 0.8 });
+                                this.sound4 = this.sound.add('rootRock4', { volume: volume - 0.1 });
                                 this.sound4?.play();
                                 break;
                         }
