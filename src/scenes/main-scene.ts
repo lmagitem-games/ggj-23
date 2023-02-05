@@ -8,12 +8,7 @@ export class MainScene extends Phaser.Scene {
     private loaded: boolean;
     private initialized: boolean;
     private behaviorSelected: boolean;
-
-    private waterBarContainer: Phaser.GameObjects.Graphics;
-    private waterBarFill: Phaser.GameObjects.Graphics;
-
     private turn: number;
-
     private tileMultiplier: number;
     private soundParam: number;
     private mapLevel: number;
@@ -76,9 +71,11 @@ export class MainScene extends Phaser.Scene {
             panel?: Phaser.GameObjects.Sprite,
             tile?: Phaser.GameObjects.Sprite,
             selected: Behavior
-        },
-        };
+        }
+    };
 
+    private waterBarContainer: Phaser.GameObjects.Graphics;
+    private waterBarFill: Phaser.GameObjects.Graphics;
     private gameloopTimer: Phaser.Time.TimerEvent;
     private ambianceAudio: Phaser.Sound.BaseSound;
     private sound1: Phaser.Sound.BaseSound;
@@ -1012,7 +1009,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     private destroyGameObjects() {
-        
         Object.values(this.behaviorInputs).forEach(value =>
         {
             value.leftArrow?.destroy();
