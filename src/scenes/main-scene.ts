@@ -163,7 +163,6 @@ export class MainScene extends Phaser.Scene {
         menuSprites.push(this.behaviorInputs.grass.leftArrow = this.add.sprite(leftColumn - 50 * scale, firstRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
-            .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.GRASS, this.behaviorInputs.grass)));
         menuSprites.push(this.behaviorInputs.grass.topArrow = this.add.sprite(leftColumn, firstRow - 50 * scale, 'grey-top-arrow')
             .setScale(scale)
@@ -299,6 +298,13 @@ export class MainScene extends Phaser.Scene {
                 text.destroy();
                 menuSprites.forEach(sprite => sprite.destroy());
             });
+        
+        this.setSelected(this.behaviorInputs.grass.selected, TileTypeForBehavior.GRASS, this.behaviorInputs.grass);
+        this.setSelected(this.behaviorInputs.soil.selected, TileTypeForBehavior.SOIL, this.behaviorInputs.soil);
+        this.setSelected(this.behaviorInputs.sand.selected, TileTypeForBehavior.SAND, this.behaviorInputs.sand);
+        this.setSelected(this.behaviorInputs.trees.selected, TileTypeForBehavior.TREE, this.behaviorInputs.trees);
+        this.setSelected(this.behaviorInputs.rocks.selected, TileTypeForBehavior.ROCK, this.behaviorInputs.rocks);
+        this.setSelected(this.behaviorInputs.roots.selected, TileTypeForBehavior.ROOTS, this.behaviorInputs.roots);
     }
 
     private simulationloop() {
