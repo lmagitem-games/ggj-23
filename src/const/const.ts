@@ -3,6 +3,7 @@ export const initialLoadNeeded = 6;
 export const initialLoadingString = `|${'='.repeat(initialLoadCount)}${' '.repeat(initialLoadNeeded - initialLoadCount + 1)}|\nLoading...`;
 
 export let CONST = {
+  ROOTS: 0,
   SCORE: 0,
   HIGHSCORE: 0,
   FIELD_SIZE: 8,

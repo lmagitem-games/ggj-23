@@ -162,11 +162,22 @@ export class MainScene extends Phaser.Scene {
                         currentTile.updateForeground(previousTileNewAsset);
                         currentTile.getForegroundSprite()?.destroy();
                         this.setForegroundSprite(currentCoord.x, currentCoord.y, currentTile);
+
+                        this.checkAndIncreaseScore(nextTile);
                     }
                 }
             }
         };
         this.turn++;
+    }
+
+    private checkAndIncreaseScore(nextTile: Tile): void {
+        if (nextTile.getTileType() === TileType.WATER) {
+            CONST.SCORE++;
+            if (CONST.SCORE > CONST.HIGHSCORE)
+                CONST.HIGHSCORE = CONST.SCORE;
+            console.log(`${CONST.SCORE} of ${CONST.ROOTS} made it to the river!`)
+        }
     }
 
     private playMovementSound(nextTile: Tile) {
@@ -304,6 +315,7 @@ export class MainScene extends Phaser.Scene {
                                 : contents === TileContents.ROOTS_D ? Direction.SOUTH
                                     : Direction.WEST;
                         this.roots.push(new Root(tile, direction, this.rootsBehavior));
+                        CONST.ROOTS++;
                         tile.setIsObstacle(true);
                     }
                 }
