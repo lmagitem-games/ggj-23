@@ -411,7 +411,7 @@ export class MainScene extends Phaser.Scene {
             if (this.sound2?.isPlaying) soundsPlaying++;
             if (this.sound3?.isPlaying) soundsPlaying++;
             if (this.sound4?.isPlaying) soundsPlaying++;
-            let volume = 1 - Math.random() * 0.1 * (soundsPlaying + 1);
+            let volume = 1; // 1 - Math.random() * 0.1 * (soundsPlaying + 1);
             if (volume > 1) volume = 1;
             if (volume < 0.5) volume = 0.5;
 
