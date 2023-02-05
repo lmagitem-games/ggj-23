@@ -14,7 +14,8 @@ export class MainScene extends Phaser.Scene {
 
     private tileMultiplier = 1;
     private soundParam = 0;
-    private levelToLoad = 'example-s' + this.tileMultiplier;
+    private mapLevel = 1;
+    private levelToLoad = this.mapLevel + '-s' + this.tileMultiplier;
     private mapTileWidth = this.tileMultiplier * 16;
     private mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
     private mapTileHeight = this.tileMultiplier * 9;
@@ -114,9 +115,10 @@ export class MainScene extends Phaser.Scene {
         super({ key: "MainScene" });
     }
 
-    public init(data: { tileMultiplier: number, soundParam: number } = { tileMultiplier: 1, soundParam: 0 }): void {
+    public init(data: { tileMultiplier: number, map: number, soundParam: number } = { tileMultiplier: 1, map: 1, soundParam: 0 }): void {
+        this.mapLevel = data.map;
         this.tileMultiplier = data.tileMultiplier;
-        this.levelToLoad = 'example-s' + this.tileMultiplier;
+        this.levelToLoad = this.mapLevel + '-s' + this.tileMultiplier;
         this.mapTileWidth = this.tileMultiplier * 16;
         this.mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
         this.mapTileHeight = this.tileMultiplier * 9;
@@ -317,12 +319,12 @@ export class MainScene extends Phaser.Scene {
                     if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
                         // Then if next tile is different that current one check where root should go according to its behavior
                         if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
-                           let behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
+                            let behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
                             direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
                             nextTile = this.getNextTile(currentCoord, direction, true);
                             behavior = root.getBehaviorFor(nextTile?.getTileTypeForBehavior()) || 0;
                             direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
-                       }
+                        }
 
                         // Then move the root by updating the appropriate tiles
                         if (!!nextTile && !nextTile.isObstacle()) {
