@@ -110,17 +110,16 @@ export class MainScene extends Phaser.Scene {
     }
 
     private buildMenu() {
-        const arrow = this.add.sprite(0, 0, 'grey-left-arrow');
-        const ui = this.add.container(this.mapPixelWidth / 2, this.mapPixelHeight / 2, [arrow]);
-        ui.setDepth(50);
-
-        this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2 + 300, 'Launch simulation', { font: "65px", align: "center" })
+        const text = this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight - 12, 'Launch simulation', { font: "12px", align: "center" })
             .setOrigin(0.5)
-            .setPadding(10)
+            .setPadding(4)
             .setDepth(50)
             .setStyle({ backgroundColor: '#111' })
             .setInteractive()
-            .on('pointerdown', () => this.behaviorSelected = true);
+            .on('pointerdown', () => {
+                this.behaviorSelected = true;
+                text.destroy();
+            });
     }
 
     private simulationloop() {
