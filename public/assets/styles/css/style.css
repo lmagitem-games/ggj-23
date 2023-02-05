@@ -1,9 +1,9 @@
 body {
-  background-color: blueviolet;
-  color: #abb2bf;
+  background-color: rgb(88, 22, 149);
+  color: white;
 }
 
-#game {
+div {
   width: 100%;
   height: 100%;
   padding: 24px;
