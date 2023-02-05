@@ -9,7 +9,9 @@ export class MainScene extends Phaser.Scene {
     private initialized = false;
     private behaviorSelected = false;
     private isGameOver = false;
-    private graphicsBlue: { fillStyle: (arg0: number) => void; fillRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
+
+    private waterBarContainer: Phaser.GameObjects.Graphics;
+    private waterBarFill: Phaser.GameObjects.Graphics;
 
     private turn = 0;
 
@@ -132,29 +134,14 @@ export class MainScene extends Phaser.Scene {
         this.initAudio();
         this.buildMenu();
         this.launchGameLoop();
-        this.waterBar();
+        this.addWaterBar();
     }
 
     public update(time: number, delta: number): void {
         if (this.behaviorSelected) {
-
-            if (CONST.SCORE >= CONST.ROOTS * 0) {
-                this.isGameOver = true;
-            }
-            if (CONST.SCORE >= CONST.ROOTS * 0.25) {
-                this.graphicsBlue.fillStyle(0x0000FF);
-                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 115, 10, 10)
-                this.isGameOver = true;
-            }
-            if (CONST.SCORE >= CONST.ROOTS * 0.50) {
-                this.graphicsBlue.fillStyle(0x0000FF);
-                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 125, 10, 20)
-                this.isGameOver = true;
-            }
-            if (CONST.SCORE >= CONST.ROOTS * 0.75) {
-                this.graphicsBlue.fillStyle(0x0000FF);
-                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 130, 10, 25)
-                this.isGameOver = false;
+            if (CONST.SCORE > 0) {
+                this.waterBarFill.fillStyle(0x0000FF);
+                this.waterBarFill.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 106 - CONST.SCORE / CONST.ROOTS * 32, 10, CONST.SCORE / CONST.ROOTS * 32);
             }
         }
     }
@@ -490,144 +477,192 @@ export class MainScene extends Phaser.Scene {
                     case TileTypeForBehavior.GRASS:
                         switch (i) {
                             case 0:
-                                this.sound1?.stop();
-                                this.sound1 = this.sound.add('rootGrass1', { volume });
-                                this.sound1?.play();
+                                if (!this.sound1?.isPlaying) {
+                                    this.sound1?.stop();
+                                    this.sound1 = this.sound.add('rootGrass1', { volume });
+                                    this.sound1?.play();
+                                }
                                 break;
                             case 1:
-                                this.sound2?.stop();
-                                this.sound2 = this.sound.add('rootGrass2', { volume });
-                                this.sound2?.play();
+                                if (!this.sound2?.isPlaying) {
+                                    this.sound2?.stop();
+                                    this.sound2 = this.sound.add('rootGrass2', { volume });
+                                    this.sound2?.play();
+                                }
                                 break;
                             case 2:
-                                this.sound3?.stop();
-                                this.sound3 = this.sound.add('rootGrass3', { volume });
-                                this.sound3?.play();
+                                if (!this.sound3?.isPlaying) {
+                                    this.sound3?.stop();
+                                    this.sound3 = this.sound.add('rootGrass3', { volume });
+                                    this.sound3?.play();
+                                }
                                 break;
                             default:
-                                this.sound4?.stop();
-                                this.sound4 = this.sound.add('rootGrass2', { volume });
-                                this.sound4?.play();
+                                if (!this.sound4?.isPlaying) {
+                                    this.sound4?.stop();
+                                    this.sound4 = this.sound.add('rootGrass2', { volume });
+                                    this.sound4?.play();
+                                }
                                 break;
                         }
                         break;
                     case TileTypeForBehavior.SAND:
                         switch (i) {
                             case 0:
-                                this.sound1?.stop();
-                                this.sound1 = this.sound.add('rootSand-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound1?.play();
+                                if (!this.sound1?.isPlaying) {
+                                    this.sound1?.stop();
+                                    this.sound1 = this.sound.add('rootSand-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound1?.play();
+                                }
                                 break;
                             case 1:
-                                this.sound2?.stop();
-                                this.sound2 = this.sound.add('rootSand-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound2?.play();
+                                if (!this.sound2?.isPlaying) {
+                                    this.sound2?.stop();
+                                    this.sound2 = this.sound.add('rootSand-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound2?.play();
+                                }
                                 break;
                             case 2:
-                                this.sound3?.stop();
-                                this.sound3 = this.sound.add('rootSand-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound3?.play();
+                                if (!this.sound3?.isPlaying) {
+                                    this.sound3?.stop();
+                                    this.sound3 = this.sound.add('rootSand-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound3?.play();
+                                }
                                 break;
                             default:
-                                this.sound4?.stop();
-                                this.sound4 = this.sound.add('rootSand-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound4?.play();
+                                if (!this.sound4?.isPlaying) {
+                                    this.sound4?.stop();
+                                    this.sound4 = this.sound.add('rootSand-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound4?.play();
+                                }
                                 break;
                         }
                         break;
                     case TileTypeForBehavior.SOIL:
                         switch (i) {
                             case 0:
-                                this.sound1?.stop();
-                                this.sound1 = this.sound.add('rootDirt-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound1?.play();
+                                if (!this.sound1?.isPlaying) {
+                                    this.sound1?.stop();
+                                    this.sound1 = this.sound.add('rootDirt-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound1?.play();
+                                }
                                 break;
                             case 1:
-                                this.sound2?.stop();
-                                this.sound2 = this.sound.add('rootDirt-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound2?.play();
+                                if (!this.sound2?.isPlaying) {
+                                    this.sound2?.stop();
+                                    this.sound2 = this.sound.add('rootDirt-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound2?.play();
+                                }
                                 break;
                             case 2:
-                                this.sound3?.stop();
-                                this.sound3 = this.sound.add('rootDirt-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound3?.play();
+                                if (!this.sound3?.isPlaying) {
+                                    this.sound3?.stop();
+                                    this.sound3 = this.sound.add('rootDirt-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound3?.play();
+                                }
                                 break;
                             default:
-                                this.sound4?.stop();
-                                this.sound4 = this.sound.add('rootDirt-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound4?.play();
+                                if (!this.sound4?.isPlaying) {
+                                    this.sound4?.stop();
+                                    this.sound4 = this.sound.add('rootDirt-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound4?.play();
+                                }
                                 break;
                         }
                         break;
                     case TileTypeForBehavior.WATER:
                         switch (i % 4) {
                             case 0:
-                                this.sound1?.stop();
-                                this.sound1 = this.sound.add('rootWater1', { volume });
-                                this.sound1?.play();
+                                if (!this.sound1?.isPlaying) {
+                                    this.sound1?.stop();
+                                    this.sound1 = this.sound.add('rootWater1', { volume });
+                                    this.sound1?.play();
+                                }
                                 break;
                             case 1:
-                                this.sound2?.stop();
-                                this.sound2 = this.sound.add('rootWater2', { volume });
-                                this.sound2?.play();
+                                if (!this.sound2?.isPlaying) {
+                                    this.sound2?.stop();
+                                    this.sound2 = this.sound.add('rootWater2', { volume });
+                                    this.sound2?.play();
+                                }
                                 break;
                             case 2:
-                                this.sound3?.stop();
-                                this.sound3 = this.sound.add('rootWater3', { volume });
-                                this.sound3?.play();
+                                if (!this.sound3?.isPlaying) {
+                                    this.sound3?.stop();
+                                    this.sound3 = this.sound.add('rootWater3', { volume });
+                                    this.sound3?.play();
+                                }
                                 break;
                             default:
-                                this.sound4?.stop();
-                                this.sound4 = this.sound.add('rootWater2', { volume });
-                                this.sound4?.play();
+                                if (!this.sound4?.isPlaying) {
+                                    this.sound4?.stop();
+                                    this.sound4 = this.sound.add('rootWater2', { volume });
+                                    this.sound4?.play();
+                                }
                                 break;
                         }
                         break;
                     case TileTypeForBehavior.ROCK:
                         switch (i % 4) {
                             case 0:
-                                this.sound1?.stop();
-                                this.sound1 = this.sound.add('rootRock1', { volume: 0.8 });
-                                this.sound1?.play();
+                                if (!this.sound1?.isPlaying) {
+                                    this.sound1?.stop();
+                                    this.sound1 = this.sound.add('rootRock1', { volume: 0.8 });
+                                    this.sound1?.play();
+                                }
                                 break;
                             case 1:
-                                this.sound2?.stop();
-                                this.sound2 = this.sound.add('rootRock2', { volume: 0.8 });
-                                this.sound2?.play();
+                                if (!this.sound2?.isPlaying) {
+                                    this.sound2?.stop();
+                                    this.sound2 = this.sound.add('rootRock2', { volume: 0.8 });
+                                    this.sound2?.play();
+                                }
                                 break;
                             case 2:
-                                this.sound3?.stop();
-                                this.sound3 = this.sound.add('rootRock3', { volume: 0.8 });
-                                this.sound3?.play();
+                                if (!this.sound3?.isPlaying) {
+                                    this.sound3?.stop();
+                                    this.sound3 = this.sound.add('rootRock3', { volume: 0.8 });
+                                    this.sound3?.play();
+                                }
                                 break;
                             default:
-                                this.sound4?.stop();
-                                this.sound4 = this.sound.add('rootRock4', { volume: 0.8 });
-                                this.sound4?.play();
+                                if (!this.sound4?.isPlaying) {
+                                    this.sound4?.stop();
+                                    this.sound4 = this.sound.add('rootRock4', { volume: 0.8 });
+                                    this.sound4?.play();
+                                }
                                 break;
                         }
                         break;
                     default:
                         switch (i) {
                             case 0:
-                                this.sound1?.stop();
-                                this.sound1 = this.sound.add('rootDirt-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound1?.play();
+                                if (!this.sound1?.isPlaying) {
+                                    this.sound1?.stop();
+                                    this.sound1 = this.sound.add('rootDirt-p1-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound1?.play();
+                                }
                                 break;
                             case 1:
-                                this.sound2?.stop();
-                                this.sound2 = this.sound.add('rootDirt-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound2?.play();
+                                if (!this.sound2?.isPlaying) {
+                                    this.sound2?.stop();
+                                    this.sound2 = this.sound.add('rootDirt-p2-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound2?.play();
+                                }
                                 break;
                             case 2:
-                                this.sound3?.stop();
-                                this.sound3 = this.sound.add('rootDirt-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound3?.play();
+                                if (!this.sound3?.isPlaying) {
+                                    this.sound3?.stop();
+                                    this.sound3 = this.sound.add('rootDirt-p3-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound3?.play();
+                                }
                                 break;
                             default:
-                                this.sound4?.stop();
-                                this.sound4 = this.sound.add('rootDirt-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
-                                this.sound4?.play();
+                                if (!this.sound4?.isPlaying) {
+                                    this.sound4?.stop();
+                                    this.sound4 = this.sound.add('rootDirt-p4-' + (Math.floor(Math.random() * 4) + 1), { volume });
+                                    this.sound4?.play();
+                                }
                                 break;
                         }
                         break;
@@ -982,12 +1017,11 @@ export class MainScene extends Phaser.Scene {
         while (!this.loaded && failsafe > Date.now()) { }
     }
 
-    // Jauge de l'eau
-    private waterBar() {
-        let graphics = this.add.graphics()
-        this.graphicsBlue = this.add.graphics()
-        graphics.fillStyle(0xffffff)
-        graphics.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 140, 10, 35)
+    private addWaterBar() {
+        this.waterBarContainer = this.add.graphics();
+        this.waterBarFill = this.add.graphics();
+        this.waterBarContainer.fillStyle(0xffffff)
+        this.waterBarContainer.fillRect(this.mapPixelWidth - 16, this.mapPixelHeight - 140, 12, 35)
     }
 
     private clearScene() {
