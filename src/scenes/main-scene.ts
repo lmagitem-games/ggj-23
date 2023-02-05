@@ -136,26 +136,22 @@ export class MainScene extends Phaser.Scene {
     }
 
     public update(time: number, delta: number): void {
-        if(this.behaviorSelected){
-            
-            if(CONST.SCORE >= CONST.ROOTS * 0)
-            {             
+        if (this.behaviorSelected) {
+
+            if (CONST.SCORE >= CONST.ROOTS * 0) {
                 this.isGameOver = true;
             }
-            if(CONST.SCORE >= CONST.ROOTS * 0.25)
-            {             
+            if (CONST.SCORE >= CONST.ROOTS * 0.25) {
                 this.graphicsBlue.fillStyle(0x0000FF);
                 this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 115, 10, 10)
                 this.isGameOver = true;
             }
-            if(CONST.SCORE >= CONST.ROOTS * 0.50)
-            {             
+            if (CONST.SCORE >= CONST.ROOTS * 0.50) {
                 this.graphicsBlue.fillStyle(0x0000FF);
                 this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 125, 10, 20)
                 this.isGameOver = true;
             }
-            if(CONST.SCORE >= CONST.ROOTS * 0.75)
-            {          
+            if (CONST.SCORE >= CONST.ROOTS * 0.75) {
                 this.graphicsBlue.fillStyle(0x0000FF);
                 this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 130, 10, 25)
                 this.isGameOver = false;
@@ -317,7 +313,7 @@ export class MainScene extends Phaser.Scene {
             });
         const hideText = 'Hide menu';
         const showText = 'Show Menu';
-        const hideMenu = this.add.text(100*scale, this.mapPixelHeight - 40*scale, hideText, { font: "14px", align: "center" })
+        const hideMenu = this.add.text(100 * scale, this.mapPixelHeight - 40 * scale, hideText, { font: "14px", align: "center" })
             .setOrigin(0, 0)
             .setPadding(4)
             .setScale(scale)
@@ -334,7 +330,7 @@ export class MainScene extends Phaser.Scene {
                 }
             });
 
-        const text = this.add.text(this.mapPixelWidth - 100*scale, this.mapPixelHeight - 40*scale, 'Launch simulation', { font: "14px", align: "center" })
+        const text = this.add.text(this.mapPixelWidth - 100 * scale, this.mapPixelHeight - 40 * scale, 'Launch simulation', { font: "14px", align: "center" })
             .setOrigin(1, 0)
             .setPadding(4)
             .setScale(scale)
@@ -451,21 +447,21 @@ export class MainScene extends Phaser.Scene {
     }
 
     private gameOver(): void {
-        setTimeout(() => {1500
+        setTimeout(() => {
             this.gameloopTimer.remove();
             console.log(this.isGameOver);
-            if(this.isGameOver){
-                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Vous avez Perdu car t\'es une merde', { font: "12px", align: "center" })
-                .setOrigin(0.5)
-                .setPadding(4)
-                .setDepth(50)
-            }else{
-                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Vous avez Gagnez Car t\'es un GOAT', { font: "12px", align: "center" })
-                .setOrigin(0.5)
-                .setPadding(4)
-                .setDepth(50)
+            if (this.isGameOver) {
+                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'The tree`s going to die of thirst :(', { font: "12px", align: "center" })
+                    .setOrigin(0.5)
+                    .setPadding(4)
+                    .setDepth(50)
+            } else {
+                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'The tree drinks plenty of water! :)', { font: "12px", align: "center" })
+                    .setOrigin(0.5)
+                    .setPadding(4)
+                    .setDepth(50)
             }
-        });
+        }, 500);
     }
 
     private checkAndIncreaseScore(root: Root, nextTile: Tile): void {
@@ -986,21 +982,20 @@ export class MainScene extends Phaser.Scene {
         while (!this.loaded && failsafe > Date.now()) { }
     }
 
-     // Jauge de l'eau 
-    private waterBar(){
+    // Jauge de l'eau
+    private waterBar() {
         let graphics = this.add.graphics()
         this.graphicsBlue = this.add.graphics()
         graphics.fillStyle(0xffffff)
         graphics.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 140, 10, 35)
     }
 
-    private clearScene()
-    {
+    private clearScene() {
         this.ambianceAudio.destroy();
         this.scene.start("MainMenuScene");
         CONST.LOAD_COUNT = 0;
         CONST.SCORE = 0;
-        CONST.ROOTS =0;
+        CONST.ROOTS = 0;
         this.loaded = false;
         this.initialized = false;
         this.behaviorSelected = false;
