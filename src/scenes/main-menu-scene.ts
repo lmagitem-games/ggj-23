@@ -160,7 +160,7 @@ export class MainMenuScene extends Phaser.Scene {
       this.startMainScene({ tileMultiplier: 1, map: 1 });
     }
     if (!!this.keyZ && this.keyZ.isDown) {
-      this.startMainScene({ tileMultiplier: 2, map: 2 });
+      this.startMainScene({ tileMultiplier: 1, map: 2 });
     }
     if (!!this.keyE && this.keyE.isDown) {
       this.startMainScene({ tileMultiplier: 2, map: 3, soundParam: 1 });
