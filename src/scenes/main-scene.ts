@@ -9,6 +9,7 @@ export class MainScene extends Phaser.Scene {
     private initialized = false;
     private behaviorSelected = false;
     private isGameOver = false;
+    private graphicsBlue: { fillStyle: (arg0: number) => void; fillRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
 
     private turn = 0;
 
@@ -131,10 +132,35 @@ export class MainScene extends Phaser.Scene {
         this.initAudio();
         this.buildMenu();
         this.launchGameLoop();
+        this.waterBar();
     }
 
     public update(time: number, delta: number): void {
-
+        if(this.behaviorSelected){
+            
+            if(CONST.SCORE >= CONST.ROOTS * 0)
+            {             
+                this.isGameOver = true;
+            }
+            if(CONST.SCORE >= CONST.ROOTS * 0.25)
+            {             
+                this.graphicsBlue.fillStyle(0x0000FF);
+                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 115, 10, 10)
+                this.isGameOver = true;
+            }
+            if(CONST.SCORE >= CONST.ROOTS * 0.50)
+            {             
+                this.graphicsBlue.fillStyle(0x0000FF);
+                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 125, 10, 20)
+                this.isGameOver = true;
+            }
+            if(CONST.SCORE >= CONST.ROOTS * 0.75)
+            {          
+                this.graphicsBlue.fillStyle(0x0000FF);
+                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 130, 10, 25)
+                this.isGameOver = false;
+            }
+        }
     }
 
     private buildMenu() {
@@ -280,6 +306,15 @@ export class MainScene extends Phaser.Scene {
             .setDepth(75)
             .play(`${TileAsset.ROOTS_DC}`));
 
+        this.add.text(12, 12, 'Back', { font: "12px", align: "center" })
+            .setOrigin(0)
+            .setPadding(4)
+            .setDepth(50)
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.clearScene();
+            });
         const hideText = 'Hide menu';
         const showText = 'Show Menu';
         const hideMenu = this.add.text(100*scale, this.mapPixelHeight - 40*scale, hideText, { font: "14px", align: "center" })
@@ -408,14 +443,29 @@ export class MainScene extends Phaser.Scene {
     private endRoot(root: Root): void {
         console.log(`Root n°${root.id} (${root.getCurrentTile().getCoord().x}:${root.getCurrentTile().getCoord().y}, dir: ${root.getDirection()}) has ended its journey`);
         this.rootsToRemove.push(root.id);
-        if (this.roots.length < 1) {
-            this.gameOver();
-        }
+        setTimeout(() => {
+            if (this.roots.length < 1) {
+                this.gameOver();
+            }
+        });
     }
 
     private gameOver(): void {
-        setTimeout(() => this.isGameOver = true, 1500);
-        this.gameloopTimer.remove();
+        setTimeout(() => {1500
+            this.gameloopTimer.remove();
+            console.log(this.isGameOver);
+            if(this.isGameOver){
+                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Vous avez Perdu car t\'es une merde', { font: "12px", align: "center" })
+                .setOrigin(0.5)
+                .setPadding(4)
+                .setDepth(50)
+            }else{
+                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Vous avez Gagnez Car t\'es un GOAT', { font: "12px", align: "center" })
+                .setOrigin(0.5)
+                .setPadding(4)
+                .setDepth(50)
+            }
+        });
     }
 
     private checkAndIncreaseScore(root: Root, nextTile: Tile): void {
@@ -931,5 +981,26 @@ export class MainScene extends Phaser.Scene {
     private waitUntilEverythingLoaded() {
         const failsafe = Date.now() + 3000;
         while (!this.loaded && failsafe > Date.now()) { }
+    }
+
+     // Jauge de l'eau 
+    private waterBar(){
+        let graphics = this.add.graphics()
+        this.graphicsBlue = this.add.graphics()
+        graphics.fillStyle(0xffffff)
+        graphics.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 140, 10, 35)
+    }
+
+    private clearScene()
+    {
+        this.ambianceAudio.destroy();
+        this.scene.start("MainMenuScene");
+        CONST.LOAD_COUNT = 0;
+        CONST.SCORE = 0;
+        CONST.ROOTS =0;
+        this.loaded = false;
+        this.initialized = false;
+        this.behaviorSelected = false;
+        this.isGameOver = false;
     }
 }
