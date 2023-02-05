@@ -1,14 +1,12 @@
 import { parse, ParseResult } from 'papaparse';
+import { CONST, initialLoadCount, initialLoadingString, initialLoadNeeded } from '../const/const';
 import { Coord } from '../objects/coord';
 import { Behavior, Direction, Root } from '../objects/root';
 import { Tile, TileAsset, TileContents, TileType, TileTypeForBehavior } from '../objects/tile';
 
-export const TILE_WIDTH = 16;
-export const TILE_HEIGHT = 16;
-
 export class MainScene extends Phaser.Scene {
-    private initialized = false;
     private loaded = false;
+    private initialized = false;
     private behaviorSelected = false;
 
     private turn = 0;
@@ -17,15 +15,13 @@ export class MainScene extends Phaser.Scene {
     private soundParam = 0;
     private levelToLoad = 'example-s' + this.tileMultiplier;
     private mapTileWidth = this.tileMultiplier * 16;
-    private mapPixelWidth = this.tileMultiplier * 16 * TILE_WIDTH;
+    private mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
     private mapTileHeight = this.tileMultiplier * 9;
-    private mapPixelHeight = this.tileMultiplier * 9 * TILE_HEIGHT;
+    private mapPixelHeight = this.tileMultiplier * 9 * CONST.TILE_HEIGHT;
     private backgroundTiles: (number | null)[][] = [];
     private foregroundTiles: (number | null)[][] = [];
     private map: Tile[][] = [];
     private roots: Root[] = [];
-    private loadCount = 0;
-    private loadNeeded = 6;
     private rootsBehavior: Map<TileTypeForBehavior, Behavior> = new Map([
         [TileTypeForBehavior.GRASS, Behavior.AHEAD],
         [TileTypeForBehavior.SOIL, Behavior.AHEAD],
@@ -58,21 +54,19 @@ export class MainScene extends Phaser.Scene {
         super({ key: "MainScene" });
     }
 
-    public init(data: { tileMultiplier: number, soundParam: number }): void {
+    public init(data: { tileMultiplier: number, soundParam: number } = { tileMultiplier: 1, soundParam: 0 }): void {
         this.tileMultiplier = data.tileMultiplier;
         this.levelToLoad = 'example-s' + this.tileMultiplier;
         this.mapTileWidth = this.tileMultiplier * 16;
-        this.mapPixelWidth = this.tileMultiplier * 16 * TILE_WIDTH;
+        this.mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
         this.mapTileHeight = this.tileMultiplier * 9;
-        this.mapPixelHeight = this.tileMultiplier * 9 * TILE_HEIGHT;
+        this.mapPixelHeight = this.tileMultiplier * 9 * CONST.TILE_HEIGHT;
         this.soundParam = data.soundParam ?? this.soundParam;
         this.initialized = true;
     }
 
     public preload(): void {
-        const failsafe = Date.now() + 3000;
-        while (!this.initialized && failsafe > Date.now()) { }
-
+        this.waitUntilInitialized();
         this.loadLevel();
         this.loadSpritesheet();
         this.loadUI();
@@ -80,32 +74,17 @@ export class MainScene extends Phaser.Scene {
     }
 
     public create(): void {
-        const failsafe = Date.now() + 3000;
-
-        // Wait until everything is loaded
-        while (!this.loaded && failsafe > Date.now()) { }
-
+        this.waitUntilEverythingLoaded();
         this.initTileAnimations();
         this.initMap();
         this.initCamera();
         this.initAudio();
-
-        // create button to choice direction
         this.buildMenu();
+        this.launchGameLoop();
+    }
 
-        console.log('Initialized Map:', this.map);
-        console.log('Initialized Roots:', this.roots);
+    public update(time: number, delta: number): void {
 
-        this.gameloopTimer = this.time.addEvent({
-            delay: 150,
-            callback: () => this.simulationloop(),
-            args: [],
-            loop: true,
-            repeat: 0,
-            startAt: 0,
-            timeScale: 1,
-            paused: false
-        });
     }
 
     private buildMenu() {
@@ -148,15 +127,7 @@ export class MainScene extends Phaser.Scene {
                             nextTile = new Tile({
                                 coords: nextCoord,
                                 csvBackground: nextTile.getTileType(),
-                                csvForeground:
-                                    // Same column but next row (down)
-                                    currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ? TileContents.ROOTS_D
-                                        // Same column but previous row (up)
-                                        : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ? TileContents.ROOTS_T
-                                            // Same row but next column (right)
-                                            : currentCoord.x > nextCoord.x && currentCoord.y === nextCoord.y ? TileContents.ROOTS_L
-                                                // Same row but previous column (left)
-                                                : TileContents.ROOTS_R
+                                csvForeground: this.calculateNextTileContents(currentCoord, nextCoord)
                             });
                             nextTile.setIsObstacle(true);
                             root.setNextDirection(direction);
@@ -187,42 +158,7 @@ export class MainScene extends Phaser.Scene {
                         nextTile.setBackgroundSprite(oldBackgroundSprite);
                         this.setForegroundSprite(nextCoord.x, nextCoord.y, nextTile);
 
-                        const previousTileNewAsset =
-                            // Same column but down
-                            currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ?
-                                // Old one went from up
-                                currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TD
-                                    // Old one went from right
-                                    : currentTile.getTileContents() === TileContents.ROOTS_L ? TileAsset.ROOTS_DR
-                                        // Old one went from left
-                                        : TileAsset.ROOTS_DL
-                                // Same column but up
-                                : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ?
-                                    // Old one went from down
-                                    currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_TD
-                                        // Old one went from right
-                                        : currentTile.getTileContents() === TileContents.ROOTS_L ? TileAsset.ROOTS_TR
-                                            // Old one went from left
-                                            : TileAsset.ROOTS_TL
-                                    // Same row but right
-                                    : currentCoord.x < nextCoord.x && currentCoord.y === nextCoord.y ?
-                                        // Old one went from down
-                                        currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_DR
-                                            // Old one went from up
-                                            : currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TR
-                                                // Old one went from left
-                                                : TileAsset.ROOTS_LR
-                                        // Same row but left
-                                        :
-                                        // Old one went from down
-                                        currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_DL
-                                            // Old one went from up
-                                            : currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TL
-                                                // Old one went from right
-                                                : TileAsset.ROOTS_LR;
-
-
-
+                        const previousTileNewAsset = this.calculateNewRootAssetForPreviousTile(currentCoord, nextCoord, currentTile);
                         currentTile.updateForeground(previousTileNewAsset);
                         currentTile.getForegroundSprite()?.destroy();
                         this.setForegroundSprite(currentCoord.x, currentCoord.y, currentTile);
@@ -252,7 +188,6 @@ export class MainScene extends Phaser.Scene {
         let volume = 1 - 0.1 * soundsPlaying;
         if (volume > 1) volume = 1;
         if (volume < 0.5) volume = 0.5;
-        console.log(volume)
 
         setTimeout(() => {
             switch (nextTile.getTileType()) {
@@ -328,33 +263,17 @@ export class MainScene extends Phaser.Scene {
         }, wait);
     }
 
-    private getNextTile(currentCoord: Coord, direction: Direction, doObstacleBlockPath: boolean) {
-        let nextCoord: Coord | undefined;
-        let nextTile: Tile | undefined;
-        let turn = 0;
-        while ((nextTile === undefined || (doObstacleBlockPath && nextTile.isObstacle())) && turn < 4) {
-            switch (direction) {
-                case Direction.NORTH:
-                    nextCoord = currentCoord.y > 0 ? new Coord(currentCoord.x, currentCoord.y - 1) : undefined;
-                    break;
-                case Direction.EAST:
-                    nextCoord = currentCoord.x > 0 ? new Coord(currentCoord.x + 1, currentCoord.y) : undefined;
-                    break;
-                case Direction.SOUTH:
-                    nextCoord = currentCoord.y < this.mapTileHeight - 1 ? new Coord(currentCoord.x, currentCoord.y + 1) : undefined;
-                    break;
-                case Direction.WEST:
-                    nextCoord = currentCoord.x < this.mapTileWidth - 1 ? new Coord(currentCoord.x - 1, currentCoord.y) : undefined;
-                    break;
-            }
-            nextTile = !!nextCoord ? this.map[nextCoord.y][nextCoord.x] : undefined;
-            direction = direction + 1 <= 3 ? direction + 1 : 0;
-            turn++;
-        }
-        return nextTile;
-    }
-
-    public update(): void {
+    private launchGameLoop() {
+        this.gameloopTimer = this.time.addEvent({
+            delay: 150,
+            callback: () => this.simulationloop(),
+            args: [],
+            loop: true,
+            repeat: 0,
+            startAt: 0,
+            timeScale: 1,
+            paused: false
+        });
     }
 
     private initMap() {
@@ -395,8 +314,34 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    private getNextTile(currentCoord: Coord, direction: Direction, doObstacleBlockPath: boolean) {
+        let nextCoord: Coord | undefined;
+        let nextTile: Tile | undefined;
+        let turn = 0;
+        while ((nextTile === undefined || (doObstacleBlockPath && nextTile.isObstacle())) && turn < 4) {
+            switch (direction) {
+                case Direction.NORTH:
+                    nextCoord = currentCoord.y > 0 ? new Coord(currentCoord.x, currentCoord.y - 1) : undefined;
+                    break;
+                case Direction.EAST:
+                    nextCoord = currentCoord.x > 0 ? new Coord(currentCoord.x + 1, currentCoord.y) : undefined;
+                    break;
+                case Direction.SOUTH:
+                    nextCoord = currentCoord.y < this.mapTileHeight - 1 ? new Coord(currentCoord.x, currentCoord.y + 1) : undefined;
+                    break;
+                case Direction.WEST:
+                    nextCoord = currentCoord.x < this.mapTileWidth - 1 ? new Coord(currentCoord.x - 1, currentCoord.y) : undefined;
+                    break;
+            }
+            nextTile = !!nextCoord ? this.map[nextCoord.y][nextCoord.x] : undefined;
+            direction = direction + 1 <= 3 ? direction + 1 : 0;
+            turn++;
+        }
+        return nextTile;
+    }
+
     private setBackgroundSprite(x: number, y: number, tile: Tile) {
-        const backgroundSprite = this.add.sprite(x * TILE_WIDTH, y * TILE_HEIGHT, 'tiles');
+        const backgroundSprite = this.add.sprite(x * CONST.TILE_WIDTH, y * CONST.TILE_HEIGHT, 'tiles');
         backgroundSprite.setOrigin(0, 0);
         backgroundSprite.setScale(1);
         backgroundSprite.play(`${tile.getBackground()}`);
@@ -404,7 +349,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private setForegroundSprite(x: number, y: number, tile: Tile) {
-        const foregroundSprite = this.add.sprite(x * TILE_WIDTH, y * TILE_HEIGHT, 'tiles');
+        const foregroundSprite = this.add.sprite(x * CONST.TILE_WIDTH, y * CONST.TILE_HEIGHT, 'tiles');
         foregroundSprite.setOrigin(0, 0);
         foregroundSprite.setScale(1);
         foregroundSprite.play(`${tile.getForeground()}`);
@@ -412,14 +357,68 @@ export class MainScene extends Phaser.Scene {
         tile.setForegroundSprite(foregroundSprite);
     }
 
-    private initAudio() {
-        this.ambianceAudio = this.sound.add('ambiance');
-        this.ambianceAudio.play({ loop: true });
+    private calculateNewRootAssetForPreviousTile(currentCoord: Coord, nextCoord: Coord, currentTile: Tile) {
+        // Same column but down
+        return currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ?
+            // Old one went from up
+            currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TD
+                // Old one went from right
+                : currentTile.getTileContents() === TileContents.ROOTS_L ? TileAsset.ROOTS_DR
+                    // Old one went from left
+                    : TileAsset.ROOTS_DL
+            // Same column but up
+            : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ?
+                // Old one went from down
+                currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_TD
+                    // Old one went from right
+                    : currentTile.getTileContents() === TileContents.ROOTS_L ? TileAsset.ROOTS_TR
+                        // Old one went from left
+                        : TileAsset.ROOTS_TL
+                // Same row but right
+                : currentCoord.x < nextCoord.x && currentCoord.y === nextCoord.y ?
+                    // Old one went from down
+                    currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_DR
+                        // Old one went from up
+                        : currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TR
+                            // Old one went from left
+                            : TileAsset.ROOTS_LR
+                    // Same row but left
+                    :
+                    // Old one went from down
+                    currentTile.getTileContents() === TileContents.ROOTS_T ? TileAsset.ROOTS_DL
+                        // Old one went from up
+                        : currentTile.getTileContents() === TileContents.ROOTS_D ? TileAsset.ROOTS_TL
+                            // Old one went from right
+                            : TileAsset.ROOTS_LR;
+    }
+
+    private calculateNextTileContents(currentCoord: Coord, nextCoord: Coord): number {
+        // Same column but next row (down)
+        return currentCoord.x === nextCoord.x && currentCoord.y < nextCoord.y ? TileContents.ROOTS_D
+            // Same column but previous row (up)
+            : currentCoord.x === nextCoord.x && currentCoord.y > nextCoord.y ? TileContents.ROOTS_T
+                // Same row but next column (right)
+                : currentCoord.x > nextCoord.x && currentCoord.y === nextCoord.y ? TileContents.ROOTS_L
+                    // Same row but previous column (left)
+                    : TileContents.ROOTS_R;
+    }
+
+    private tick(sentence: string): void {
+        CONST.LOAD_COUNT++;
+        CONST.LOADING_STRING = `|${'='.repeat(CONST.LOAD_COUNT)}${' '.repeat(CONST.LOAD_NEEDED - CONST.LOAD_COUNT + 1)}|\n${sentence}...`;
+        console.log(CONST.LOADING_STRING);
+        if (CONST.LOAD_COUNT >= CONST.LOAD_NEEDED && !this.loaded) {
+            console.log(`Scene loaded!`);
+            this.loaded = true;
+            CONST.LOAD_COUNT = initialLoadCount;
+            CONST.LOAD_NEEDED = initialLoadNeeded;
+            CONST.LOADING_STRING = initialLoadingString;
+        }
     }
 
     private initCamera() {
-        this.cameras.main.setBounds(0, 0, TILE_WIDTH * this.mapTileWidth, TILE_HEIGHT * this.mapTileHeight);
-        this.cameras.main.centerOn(TILE_WIDTH * this.mapTileWidth / 2, TILE_HEIGHT * this.mapTileHeight / 2);
+        this.cameras.main.setBounds(0, 0, CONST.TILE_WIDTH * this.mapTileWidth, CONST.TILE_HEIGHT * this.mapTileHeight);
+        this.cameras.main.centerOn(CONST.TILE_WIDTH * this.mapTileWidth / 2, CONST.TILE_HEIGHT * this.mapTileHeight / 2);
 
         switch (this.tileMultiplier) {
             case 1:
@@ -443,33 +442,29 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private tick(name: string): void {
-        this.loadCount++;
-        console.log(`|${'='.repeat(this.loadCount)}${' '.repeat(this.loadNeeded - this.loadCount)}| ${name} loaded!`);
-        if (this.loadCount >= this.loadNeeded) {
-            console.log(`Scene loaded!`);
-            this.loaded = true;
-        }
+    private initAudio() {
+        this.ambianceAudio = this.sound.add('ambiance');
+        this.ambianceAudio.play({ loop: true });
     }
 
     private loadSpritesheet() {
-        this.load.spritesheet('tiles', 'assets/tilemaps/pixelArtTiles.png', { frameWidth: TILE_WIDTH, frameHeight: TILE_HEIGHT });
-        this.tick('Tiles');
+        this.load.spritesheet('tiles', 'assets/tilemaps/pixelArtTiles.png', { frameWidth: CONST.TILE_WIDTH, frameHeight: CONST.TILE_HEIGHT });
+        this.tick('Loading map tiles');
     }
 
     private loadUI() {
-		this.load.image('grey-left-arrow', 'assets/ui/grey_sliderLeft.png');
-		this.load.image('grey-right-arrow', 'assets/ui/grey_sliderRight.png');
-		this.load.image('grey-panel', 'assets/ui/grey_sliderRight.png');
-		this.load.image('green-left-arrow', 'assets/ui/green_sliderLeft.png');
-		this.load.image('green-right-arrow', 'assets/ui/green_sliderRight.png');
-		this.load.image('green-button', 'assets/ui/green_button03.png');
-        this.tick('UI');
+        this.load.image('grey-left-arrow', 'assets/ui/grey_sliderLeft.png');
+        this.load.image('grey-right-arrow', 'assets/ui/grey_sliderRight.png');
+        this.load.image('grey-panel', 'assets/ui/grey_sliderRight.png');
+        this.load.image('green-left-arrow', 'assets/ui/green_sliderLeft.png');
+        this.load.image('green-right-arrow', 'assets/ui/green_sliderRight.png');
+        this.load.image('green-button', 'assets/ui/green_button03.png');
+        this.tick('Generating the UI');
     }
 
     private loadAudio() {
         this.load.audio('ambiance', 'assets/audio/AMB.mp3');
-        this.tick('Ambiance track');
+        this.tick('Loading forest ambiance');
         this.load.audio('rootDirt1', 'assets/audio/Roots_dirt_v2-001.mp3');
         this.load.audio('rootDirt2', 'assets/audio/Roots_dirt_v2-002.mp3');
         this.load.audio('rootDirt3', 'assets/audio/Roots_dirt_v2-003.mp3');
@@ -482,7 +477,7 @@ export class MainScene extends Phaser.Scene {
         this.load.audio('rootWater1', 'assets/audio/Roots_water_v1-001.mp3');
         this.load.audio('rootWater2', 'assets/audio/Roots_water_v1-002.mp3');
         this.load.audio('rootWater3', 'assets/audio/Roots_water_v1-003.mp3');
-        this.tick('Roots sounds');
+        this.tick('Loading roots audio');
     }
 
     private loadLevel() {
@@ -496,7 +491,7 @@ export class MainScene extends Phaser.Scene {
                 this.backgroundTiles = (results.data as unknown as (number | null)[][])
                     .map((arr: (number | null)[]) => arr.filter((val: number | null) => val !== null && val !== undefined))
                     .filter(arr => arr.length > 0);
-                this.tick('Background');
+                this.tick('Processing background');
             }
         });
         // Load foreground
@@ -510,162 +505,56 @@ export class MainScene extends Phaser.Scene {
                     .map((arr: (number | null)[]) => arr.filter((val: number | null) => val !== null && val !== undefined))
                     .filter(arr => arr.length > 0)
                     .map((arr: (number | null)[]) => arr.map(val => val === -1 ? null : val));
-                this.tick('Foreground');
+                this.tick('Processing foreground');
             }
         });
     }
 
     private initTileAnimations() {
-        this.anims.create({
-            key: `${TileAsset.WATER1}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.WATER1, TileAsset.WATER2] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.GRASS1}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.GRASS1] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.GRASS2}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.GRASS2] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.SOIL1}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.SOIL1] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.SOIL2}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.SOIL2] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.SAND1}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.SAND1] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.SAND2}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.SAND2] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.TREE1}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE1] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.TREE2}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE2] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.TREE3}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE3] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.TREE4}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE4] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROCK1}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROCK1] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROCK2}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROCK2] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROCK3}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROCK3] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROCK4}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROCK4] }),
-            frameRate: 3,
-            repeat: -1
-        });
+        this.createTileAnim(TileAsset.WATER1, [TileAsset.WATER1, TileAsset.WATER2]);
+        this.createTileAnim(TileAsset.GRASS1, [TileAsset.GRASS1]);
+        this.createTileAnim(TileAsset.GRASS2, [TileAsset.GRASS2]);
+        this.createTileAnim(TileAsset.SOIL1, [TileAsset.SOIL1]);
+        this.createTileAnim(TileAsset.SOIL2, [TileAsset.SOIL2]);
+        this.createTileAnim(TileAsset.SAND1, [TileAsset.SAND1]);
+        this.createTileAnim(TileAsset.SAND2, [TileAsset.SAND2]);
+        this.createTileAnim(TileAsset.TREE1, [TileAsset.TREE1]);
+        this.createTileAnim(TileAsset.TREE2, [TileAsset.TREE2]);
+        this.createTileAnim(TileAsset.TREE3, [TileAsset.TREE3]);
+        this.createTileAnim(TileAsset.TREE4, [TileAsset.TREE4]);
+        this.createTileAnim(TileAsset.ROCK1, [TileAsset.ROCK1]);
+        this.createTileAnim(TileAsset.ROCK2, [TileAsset.ROCK2]);
+        this.createTileAnim(TileAsset.ROCK3, [TileAsset.ROCK3]);
+        this.createTileAnim(TileAsset.ROCK4, [TileAsset.ROCK4]);
 
+        this.createTileAnim(TileAsset.ROOTS_TD, [TileAsset.ROOTS_TD]);
+        this.createTileAnim(TileAsset.ROOTS_LR, [TileAsset.ROOTS_LR]);
+        this.createTileAnim(TileAsset.ROOTS_TR, [TileAsset.ROOTS_TR]);
+        this.createTileAnim(TileAsset.ROOTS_TL, [TileAsset.ROOTS_TL]);
+        this.createTileAnim(TileAsset.ROOTS_DR, [TileAsset.ROOTS_DR]);
+        this.createTileAnim(TileAsset.ROOTS_DL, [TileAsset.ROOTS_DL]);
+        this.createTileAnim(TileAsset.ROOTS_TC, [TileAsset.ROOTS_TC]);
+        this.createTileAnim(TileAsset.ROOTS_RC, [TileAsset.ROOTS_RC]);
+        this.createTileAnim(TileAsset.ROOTS_DC, [TileAsset.ROOTS_DC]);
+        this.createTileAnim(TileAsset.ROOTS_LC, [TileAsset.ROOTS_LC]);
+    }
+
+    private createTileAnim(key: number, frames: number[]) {
         this.anims.create({
-            key: `${TileAsset.ROOTS_TD}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_TD] }),
+            key: `${key}`,
+            frames: this.anims.generateFrameNumbers('tiles', { frames }),
             frameRate: 3,
             repeat: -1
         });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_LR}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_LR] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_TR}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_TR] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_TL}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_TL] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_DR}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_DR] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_DL}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_DL] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_TC}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_TC] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_RC}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_RC] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_DC}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_DC] }),
-            frameRate: 3,
-            repeat: -1
-        });
-        this.anims.create({
-            key: `${TileAsset.ROOTS_LC}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.ROOTS_LC] }),
-            frameRate: 3,
-            repeat: -1
-        });
+    }
+
+    private waitUntilInitialized() {
+        const failsafe = Date.now() + 3000;
+        while (!this.initialized && failsafe > Date.now()) { }
+    }
+
+    private waitUntilEverythingLoaded() {
+        const failsafe = Date.now() + 3000;
+        while (!this.loaded && failsafe > Date.now()) { }
     }
 }

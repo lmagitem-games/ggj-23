@@ -10,9 +10,8 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
   height: 480,
   zoom: 1,
   parent: 'game',
-  pixelArt: true,
   type: Phaser.AUTO,
-  scene: [BootScene, MainScene, MainMenuScene],
+  scene: [BootScene, MainMenuScene, MainScene],
   backgroundColor: '#000000',
-  render: { pixelArt: true, antialias: false }
+  render: { pixelArt: true, antialias: true }
 };
