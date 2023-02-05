@@ -14,7 +14,8 @@ export class MainScene extends Phaser.Scene {
 
     private tileMultiplier = 1;
     private soundParam = 0;
-    private levelToLoad = 'example-s' + this.tileMultiplier;
+    private mapLevel = 1;
+    private levelToLoad = this.mapLevel + '-s' + this.tileMultiplier;
     private mapTileWidth = this.tileMultiplier * 16;
     private mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
     private mapTileHeight = this.tileMultiplier * 9;
@@ -114,9 +115,10 @@ export class MainScene extends Phaser.Scene {
         super({ key: "MainScene" });
     }
 
-    public init(data: { tileMultiplier: number, soundParam: number } = { tileMultiplier: 1, soundParam: 0 }): void {
+    public init(data: { tileMultiplier: number, map: number, soundParam: number } = { tileMultiplier: 1, map: 1, soundParam: 0 }): void {
+        this.mapLevel = data.map;
         this.tileMultiplier = data.tileMultiplier;
-        this.levelToLoad = 'example-s' + this.tileMultiplier;
+        this.levelToLoad = this.mapLevel + '-s' + this.tileMultiplier;
         this.mapTileWidth = this.tileMultiplier * 16;
         this.mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
         this.mapTileHeight = this.tileMultiplier * 9;
