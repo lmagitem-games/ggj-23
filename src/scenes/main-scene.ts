@@ -93,7 +93,6 @@ export class MainScene extends Phaser.Scene {
         // create button to choice direction
         this.buildMenu();
 
-
         console.log('Initialized Map:', this.map);
         console.log('Initialized Roots:', this.roots);
 

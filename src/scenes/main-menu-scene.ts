@@ -43,6 +43,8 @@ export class MainMenuScene extends Phaser.Scene {
       CONST.HIGHSCORE = CONST.SCORE;
     }
     CONST.SCORE = 0;
+
+    this.cameras.main.setZoom(2);
   }
 
   preload(): void {
@@ -57,7 +59,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 52,
-        this.sys.canvas.height / 2 - 10,
+        this.sys.canvas.height / 2 - 22,
         'snakeFont',
         'A : PLAY MAP 1',
         8
@@ -66,7 +68,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 52,
-        this.sys.canvas.height / 2 + 2,
+        this.sys.canvas.height / 2 - 10,
         'snakeFont',
         'Z : PLAY MAP 2',
         8
@@ -75,7 +77,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 52,
-        this.sys.canvas.height / 2 + 14,
+        this.sys.canvas.height / 2 + 2,
         'snakeFont',
         'E : PLAY MAP 2',
         8
@@ -84,7 +86,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 52,
-        this.sys.canvas.height / 2 + 26,
+        this.sys.canvas.height / 2 + 14,
         'snakeFont',
         'R : PLAY MAP 2',
         8
@@ -93,7 +95,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 52,
-        this.sys.canvas.height / 2 + 38,
+        this.sys.canvas.height / 2 + 26,
         'snakeFont',
         'T : PLAY MAP 3',
         8
@@ -102,7 +104,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 52,
-        this.sys.canvas.height / 2 + 50,
+        this.sys.canvas.height / 2 + 38,
         'snakeFont',
         'Y : PLAY MAP 4',
         8
@@ -111,7 +113,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 52,
-        this.sys.canvas.height / 2 + 62,
+        this.sys.canvas.height / 2 + 50,
         'snakeFont',
         'U : PLAY MAP 5',
         8
@@ -121,7 +123,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 100,
-        this.sys.canvas.height / 2 - 60,
+        this.sys.canvas.height / 2 - 70,
         'snakeFont',
         'Thirsty Roots',
         16
