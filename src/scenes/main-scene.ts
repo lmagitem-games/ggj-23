@@ -8,6 +8,7 @@ export class MainScene extends Phaser.Scene {
     private loaded = false;
     private initialized = false;
     private behaviorSelected = false;
+    private isGameOver = false;
 
     private turn = 0;
 
@@ -22,6 +23,7 @@ export class MainScene extends Phaser.Scene {
     private foregroundTiles: (number | null)[][] = [];
     private map: Tile[][] = [];
     private roots: Root[] = [];
+    private rootsToRemove: number[] = [];
     private rootsBehavior: Map<TileTypeForBehavior, Behavior> = new Map([
         [TileTypeForBehavior.GRASS, Behavior.AHEAD],
         [TileTypeForBehavior.SOIL, Behavior.AHEAD],
@@ -81,6 +83,7 @@ export class MainScene extends Phaser.Scene {
         this.initAudio();
         this.buildMenu();
         this.launchGameLoop();
+        console.log(this.roots);
     }
 
     public update(time: number, delta: number): void {
@@ -134,7 +137,13 @@ export class MainScene extends Phaser.Scene {
                             root.setNextTile(nextTile);
 
                             this.playMovementSound(nextTile);
+                        } else {
+                            // There is nowhere to go.
+                            this.endRoot(root);
                         }
+                    } else {
+                        // There is nowhere to go.
+                        this.endRoot(root);
                     }
                 } else {
                     const currentTile = root.getCurrentTile();
@@ -163,20 +172,38 @@ export class MainScene extends Phaser.Scene {
                         currentTile.getForegroundSprite()?.destroy();
                         this.setForegroundSprite(currentCoord.x, currentCoord.y, currentTile);
 
-                        this.checkAndIncreaseScore(nextTile);
+                        this.checkAndIncreaseScore(root, nextTile);
                     }
                 }
             }
         };
         this.turn++;
+
+        if (this.rootsToRemove.length > 0) {
+            this.roots = this.roots.filter(r => !this.rootsToRemove.includes(r.id));
+            this.rootsToRemove = [];
+        }
     }
 
-    private checkAndIncreaseScore(nextTile: Tile): void {
+    private endRoot(root: Root): void {
+        console.log(`Root n°${root.id} (${root.getCurrentTile().getCoord().x}:${root.getCurrentTile().getCoord().y}, dir: ${root.getDirection()}) has ended its journey`);
+        this.rootsToRemove.push(root.id);
+        if (this.roots.length < 1) {
+            this.gameOver();
+        }
+    }
+
+    private gameOver(): void {
+        setTimeout(() => this.isGameOver = true, 1500);
+        this.gameloopTimer.remove();
+    }
+
+    private checkAndIncreaseScore(root: Root, nextTile: Tile): void {
         if (nextTile.getTileType() === TileType.WATER) {
             CONST.SCORE++;
             if (CONST.SCORE > CONST.HIGHSCORE)
                 CONST.HIGHSCORE = CONST.SCORE;
-            console.log(`${CONST.SCORE} of ${CONST.ROOTS} made it to the river!`)
+            console.log(`🎉🎉🎉 Root n°${root.id} (${root.getCurrentTile().getCoord().x}:${root.getCurrentTile().getCoord().y}, dir: ${root.getDirection()}) made it to the river! (${CONST.SCORE}/${CONST.ROOTS})`)
         }
     }
 
@@ -314,8 +341,7 @@ export class MainScene extends Phaser.Scene {
                             : contents === TileContents.ROOTS_R ? Direction.EAST
                                 : contents === TileContents.ROOTS_D ? Direction.SOUTH
                                     : Direction.WEST;
-                        this.roots.push(new Root(tile, direction, this.rootsBehavior));
-                        CONST.ROOTS++;
+                        this.roots.push(new Root(CONST.ROOTS++, tile, direction, this.rootsBehavior));
                         tile.setIsObstacle(true);
                     }
                 }

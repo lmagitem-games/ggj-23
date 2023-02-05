@@ -19,7 +19,12 @@ export class Root {
     private nextTile: Tile;
     private nextDirection: Direction;
 
-    constructor(private startingTile: Tile, private direction: Direction, private behavior: Map<TileTypeForBehavior, Behavior>) {
+    constructor(
+        public readonly id: number,
+        private startingTile: Tile,
+        private direction: Direction,
+        private behavior: Map<TileTypeForBehavior, Behavior>
+    ) {
         this.previousTile = startingTile;
         this.currentTile = startingTile;
     }
