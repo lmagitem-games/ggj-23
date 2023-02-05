@@ -141,10 +141,35 @@ export class MainScene extends Phaser.Scene {
         this.initAudio();
         this.buildMenu();
         this.launchGameLoop();
+        this.waterBar();
     }
 
     public update(time: number, delta: number): void {
-
+        if(this.behaviorSelected){
+            let graphicsBlue = this.add.graphics()
+            if(CONST.SCORE >= CONST.ROOTS * 0)
+            {             
+                this.isGameOver = true;
+            }
+            if(CONST.SCORE >= CONST.ROOTS * 0.25)
+            {             
+                graphicsBlue.fillStyle(0x0000FF);
+                graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 115, 10, 10)
+                this.isGameOver = true;
+            }
+            if(CONST.SCORE >= CONST.ROOTS * 0.50)
+            {             
+                graphicsBlue.fillStyle(0x0000FF);
+                graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 125, 10, 20)
+                this.isGameOver = true;
+            }
+            if(CONST.SCORE >= CONST.ROOTS * 0.75)
+            {          
+                graphicsBlue.fillStyle(0x0000FF);
+                graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 130, 10, 25)
+                this.isGameOver = false;
+            }
+        }
     }
 
     private buildMenu() {
@@ -288,6 +313,15 @@ export class MainScene extends Phaser.Scene {
             .setDepth(75)
             .play(`${TileAsset.ROOTS_DC}`));
 
+        this.add.text(12, 12, 'Back', { font: "12px", align: "center" })
+            .setOrigin(0)
+            .setPadding(4)
+            .setDepth(50)
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.clearScene();
+            });
         const text = this.add.text(centerWidth, this.mapPixelHeight - 12, 'Launch simulation', { font: "12px", align: "center" })
             .setOrigin(0.5)
             .setPadding(4)
@@ -324,12 +358,12 @@ export class MainScene extends Phaser.Scene {
                     if (!!nextTile && currentTile.getTileType() !== TileType.WATER) {
                         // Then if next tile is different that current one check where root should go according to its behavior
                         if (currentTile.getTileTypeForBehaviorWithoutRoots() !== nextTile.getTileTypeForBehavior()) {
-                           let behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
+                            let behavior = root.getBehaviorFor(nextTile.getTileTypeForBehavior());
                             direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
                             nextTile = this.getNextTile(currentCoord, direction, true);
                             behavior = root.getBehaviorFor(nextTile?.getTileTypeForBehavior()) || 0;
                             direction = direction + behavior >= 0 && direction + behavior <= 3 ? direction + behavior : direction + behavior >= 4 ? 0 : 3;
-                       }
+                        }
 
                         // Then move the root by updating the appropriate tiles
                         if (!!nextTile && !nextTile.isObstacle()) {
@@ -395,14 +429,29 @@ export class MainScene extends Phaser.Scene {
     private endRoot(root: Root): void {
         console.log(`Root n°${root.id} (${root.getCurrentTile().getCoord().x}:${root.getCurrentTile().getCoord().y}, dir: ${root.getDirection()}) has ended its journey`);
         this.rootsToRemove.push(root.id);
-        if (this.roots.length < 1) {
-            this.gameOver();
-        }
+        setTimeout(() => {
+            if (this.roots.length < 1) {
+                this.gameOver();
+            }
+        });
     }
 
     private gameOver(): void {
-        setTimeout(() => this.isGameOver = true, 1500);
-        this.gameloopTimer.remove();
+        setTimeout(() => {1500
+            this.gameloopTimer.remove();
+            console.log(this.isGameOver);
+            if(this.isGameOver){
+                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Vous avez Perdu car t\'es une merde', { font: "12px", align: "center" })
+                .setOrigin(0.5)
+                .setPadding(4)
+                .setDepth(50)
+            }else{
+                this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight / 2, 'Vous avez Gagnez Car t\'es un GOAT', { font: "12px", align: "center" })
+                .setOrigin(0.5)
+                .setPadding(4)
+                .setDepth(50)
+            }
+        });
     }
 
     private checkAndIncreaseScore(root: Root, nextTile: Tile): void {
@@ -822,5 +871,25 @@ export class MainScene extends Phaser.Scene {
     private waitUntilEverythingLoaded() {
         const failsafe = Date.now() + 3000;
         while (!this.loaded && failsafe > Date.now()) { }
+    }
+
+     // Jauge de l'eau 
+    private waterBar(){
+        var graphics = this.add.graphics()
+        graphics.fillStyle(0xffffff)
+        graphics.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 140, 10, 35)
+    }
+
+    private clearScene()
+    {
+        this.ambianceAudio.destroy();
+        this.scene.start("MainMenuScene");
+        CONST.LOAD_COUNT = 0;
+        CONST.SCORE = 0;
+        CONST.ROOTS =0;
+        this.loaded = false;
+        this.initialized = false;
+        this.behaviorSelected = false;
+        this.isGameOver = false;
     }
 }
