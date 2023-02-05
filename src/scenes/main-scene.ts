@@ -540,7 +540,8 @@ export class MainScene extends Phaser.Scene {
 
     private setSelected(
         direction: Behavior,
-        tile: TileTypeForBehavior, obj: {
+        tile: TileTypeForBehavior,
+         obj: {
             leftArrow?: Phaser.GameObjects.Sprite,
             topArrow?: Phaser.GameObjects.Sprite,
             rightArrow?: Phaser.GameObjects.Sprite,
@@ -552,7 +553,11 @@ export class MainScene extends Phaser.Scene {
         this.rootsBehavior.set(tile, direction);
 
         // Set sprite of all arrows to grey
+        obj.leftArrow.setTexture('grey-left-arrow');
+        obj.topArrow.setTexture('green-left-arrow');
+        obj.rightArrow.setTexture('green-left-arrow');
         // Set sprite of selected arrow to green
+        obj.leftArrow.setTexture('green-left-arrow');
     }
 
     private initMap() {
