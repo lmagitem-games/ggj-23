@@ -3,8 +3,8 @@ import { Coord } from '../objects/coord';
 import { Behavior, Direction, Root } from '../objects/root';
 import { Tile, TileAsset, TileContents, TileType, TileTypeForBehavior } from '../objects/tile';
 
-export const TILE_WIDTH = 128;
-export const TILE_HEIGHT = 128;
+export const TILE_WIDTH = 16;
+export const TILE_HEIGHT = 16;
 
 export class MainScene extends Phaser.Scene {
     private initialized = false;
@@ -261,15 +261,15 @@ export class MainScene extends Phaser.Scene {
                 case TileType.GRASS:
                     switch (this.grassSoundTurn) {
                         case 0:
-                            this.rootGrassSound1 = this.sound.add('rootGrass1', { volume });
+                            this.rootGrassSound1 = this.sound.add('rootGrass1', { volume, rate: 0.8 });
                             this.rootGrassSound1.play();
                             break;
                         case 1:
-                            this.rootGrassSound2 = this.sound.add('rootGrass2', { volume });
+                            this.rootGrassSound2 = this.sound.add('rootGrass2', { volume, rate: 0.9 });
                             this.rootGrassSound2.play();
                             break;
                         default:
-                            this.rootGrassSound3 = this.sound.add('rootGrass3', { volume });
+                            this.rootGrassSound3 = this.sound.add('rootGrass3', { volume, rate: 1 });
                             this.rootGrassSound3.play();
                             break;
                     }
@@ -278,15 +278,15 @@ export class MainScene extends Phaser.Scene {
                 case TileType.SAND:
                     switch (this.sandSoundTurn) {
                         case 0:
-                            this.rootSandSound1 = this.sound.add('rootSand1', { volume });
+                            this.rootSandSound1 = this.sound.add('rootSand1', { volume, rate: 1.1 });
                             this.rootSandSound1.play();
                             break;
                         case 1:
-                            this.rootSandSound2 = this.sound.add('rootSand2', { volume });
+                            this.rootSandSound2 = this.sound.add('rootSand2', { volume, rate: 1.2 });
                             this.rootSandSound2.play();
                             break;
                         default:
-                            this.rootSandSound3 = this.sound.add('rootSand3', { volume });
+                            this.rootSandSound3 = this.sound.add('rootSand3', { volume, rate: 0.95 });
                             this.rootSandSound3.play();
                             break;
                     }
@@ -295,15 +295,15 @@ export class MainScene extends Phaser.Scene {
                 case TileType.SOIL:
                     switch (this.dirtSoundTurn) {
                         case 0:
-                            this.rootDirtSound1 = this.sound.add('rootDirt1', { volume });
+                            this.rootDirtSound1 = this.sound.add('rootDirt1', { volume, rate: 1.05 });
                             this.rootDirtSound1.play();
                             break;
                         case 1:
-                            this.rootDirtSound2 = this.sound.add('rootDirt2', { volume });
+                            this.rootDirtSound2 = this.sound.add('rootDirt2', { volume, rate: 0.85 });
                             this.rootDirtSound2.play();
                             break;
                         default:
-                            this.rootDirtSound3 = this.sound.add('rootDirt3', { volume });
+                            this.rootDirtSound3 = this.sound.add('rootDirt3', { volume, rate: 1.15 });
                             this.rootDirtSound3.play();
                             break;
                     }
@@ -425,22 +425,22 @@ export class MainScene extends Phaser.Scene {
 
         switch (this.tileMultiplier) {
             case 1:
-                this.cameras.main.setZoom(0.417);
+                this.cameras.main.setZoom(3.3333);
                 break;
             case 2:
-                this.cameras.main.setZoom(0.209);
+                this.cameras.main.setZoom(1.6666);
                 break;
             case 3:
-                this.cameras.main.setZoom(0.139);
+                this.cameras.main.setZoom(1.1111);
                 break;
             case 4:
-                this.cameras.main.setZoom(0.1042);
+                this.cameras.main.setZoom(0.8333);
                 break;
             case 5:
-                this.cameras.main.setZoom(0.0834);
+                this.cameras.main.setZoom(0.6666);
                 break;
             default:
-                this.cameras.main.setZoom(0.1042);
+                this.cameras.main.setZoom(1.1111);
                 break;
         }
     }
@@ -455,7 +455,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private loadSpritesheet() {
-        this.load.spritesheet('tiles', 'assets/tilemaps/medievalTiles.png', { frameWidth: 128, frameHeight: 128 });
+        this.load.spritesheet('tiles', 'assets/tilemaps/pixelArtTiles.png', { frameWidth: TILE_WIDTH, frameHeight: TILE_HEIGHT });
         this.tick('Tiles');
     }
 
@@ -561,8 +561,26 @@ export class MainScene extends Phaser.Scene {
             repeat: -1
         });
         this.anims.create({
-            key: `${TileAsset.TREE}`,
-            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE] }),
+            key: `${TileAsset.TREE1}`,
+            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE1] }),
+            frameRate: 3,
+            repeat: -1
+        });
+        this.anims.create({
+            key: `${TileAsset.TREE2}`,
+            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE2] }),
+            frameRate: 3,
+            repeat: -1
+        });
+        this.anims.create({
+            key: `${TileAsset.TREE3}`,
+            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE3] }),
+            frameRate: 3,
+            repeat: -1
+        });
+        this.anims.create({
+            key: `${TileAsset.TREE4}`,
+            frames: this.anims.generateFrameNumbers('tiles', { frames: [TileAsset.TREE4] }),
             frameRate: 3,
             repeat: -1
         });

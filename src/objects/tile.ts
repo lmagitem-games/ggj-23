@@ -36,7 +36,10 @@ export enum TileAsset {
     SAND2 = 3,
     WATER1 = 26,
     WATER2 = 27,
-    TREE = 24,
+    TREE1 = 22,
+    TREE2 = 23,
+    TREE3 = 24,
+    TREE4 = 25,
     ROCK1 = 9,
     ROCK2 = 10,
     ROCK3 = 11,
@@ -189,16 +192,29 @@ export class Tile {
     private initTileContentsFromCSV(csvCell: number) {
         this.contents = TileContents.NOTHING;
         this.foreground = TileAsset.EMPTY;
+        const random = Math.floor(Math.random() * 4);
         switch (csvCell) {
             case 0:
                 this.obstacle = true;
                 this.contents = TileContents.TREE
-                this.foreground = TileAsset.TREE
+                switch (random) {
+                    case 0:
+                        this.foreground = TileAsset.TREE1
+                        break;
+                    case 1:
+                        this.foreground = TileAsset.TREE2
+                        break;
+                    case 2:
+                        this.foreground = TileAsset.TREE3
+                        break;
+                    default:
+                        this.foreground = TileAsset.TREE4
+                        break;
+                }
                 break;
             case 1:
                 this.obstacle = true;
                 this.contents = TileContents.ROCK
-                const random = Math.floor(Math.random() * 4);
                 switch (random) {
                     case 0:
                         this.foreground = TileAsset.ROCK1

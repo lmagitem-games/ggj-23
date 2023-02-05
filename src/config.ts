@@ -10,6 +10,7 @@ export const GameConfig: Phaser.Types.Core.GameConfig = {
   height: 480,
   zoom: 1,
   parent: 'game',
+  pixelArt: true,
   type: Phaser.AUTO,
   scene: [BootScene, MainScene, MainMenuScene],
   backgroundColor: '#000000',
