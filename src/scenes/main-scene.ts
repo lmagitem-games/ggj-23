@@ -33,6 +33,64 @@ export class MainScene extends Phaser.Scene {
         [TileTypeForBehavior.ROCK, Behavior.RIGHT],
         [TileTypeForBehavior.ROOTS, Behavior.LEFT],
     ]);
+    private behaviorInputs: {
+        grass: {
+            leftArrow?: Phaser.GameObjects.Sprite,
+            topArrow?: Phaser.GameObjects.Sprite,
+            rightArrow?: Phaser.GameObjects.Sprite,
+            panel?: Phaser.GameObjects.Sprite,
+            tile?: Phaser.GameObjects.Sprite,
+            selected: Behavior
+        },
+        soil: {
+            leftArrow?: Phaser.GameObjects.Sprite,
+            topArrow?: Phaser.GameObjects.Sprite,
+            rightArrow?: Phaser.GameObjects.Sprite,
+            panel?: Phaser.GameObjects.Sprite,
+            tile?: Phaser.GameObjects.Sprite,
+            selected: Behavior
+        },
+        sand: {
+            leftArrow?: Phaser.GameObjects.Sprite,
+            topArrow?: Phaser.GameObjects.Sprite,
+            rightArrow?: Phaser.GameObjects.Sprite,
+            panel?: Phaser.GameObjects.Sprite,
+            tile?: Phaser.GameObjects.Sprite,
+            selected: Behavior
+        },
+        trees: {
+            leftArrow?: Phaser.GameObjects.Sprite,
+            topArrow?: Phaser.GameObjects.Sprite,
+            rightArrow?: Phaser.GameObjects.Sprite,
+            panel?: Phaser.GameObjects.Sprite,
+            tile?: Phaser.GameObjects.Sprite,
+            selected: Behavior
+        },
+        rocks: {
+            leftArrow?: Phaser.GameObjects.Sprite,
+            topArrow?: Phaser.GameObjects.Sprite,
+            rightArrow?: Phaser.GameObjects.Sprite,
+            panel?: Phaser.GameObjects.Sprite,
+            tile?: Phaser.GameObjects.Sprite,
+            selected: Behavior
+        },
+        roots: {
+            leftArrow?: Phaser.GameObjects.Sprite,
+            topArrow?: Phaser.GameObjects.Sprite,
+            rightArrow?: Phaser.GameObjects.Sprite,
+            panel?: Phaser.GameObjects.Sprite,
+            tile?: Phaser.GameObjects.Sprite,
+            selected: Behavior
+        },
+    } = {
+            grass: { selected: Behavior.AHEAD },
+            soil: { selected: Behavior.AHEAD },
+            sand: { selected: Behavior.AHEAD },
+            trees: { selected: Behavior.LEFT },
+            rocks: { selected: Behavior.RIGHT },
+            roots: { selected: Behavior.LEFT }
+        };
+
     private gameloopTimer: Phaser.Time.TimerEvent;
     private ambianceAudio: Phaser.Sound.BaseSound;
     private rootDirtSound1: Phaser.Sound.BaseSound;
@@ -83,7 +141,6 @@ export class MainScene extends Phaser.Scene {
         this.initAudio();
         this.buildMenu();
         this.launchGameLoop();
-        console.log(this.roots);
     }
 
     public update(time: number, delta: number): void {
@@ -91,10 +148,177 @@ export class MainScene extends Phaser.Scene {
     }
 
     private buildMenu() {
-        const text = this.add.text(this.mapPixelWidth / 2, this.mapPixelHeight - 12, 'Launch simulation', { font: "12px", align: "center" })
+        const scale = this.tileMultiplier * 0.33;
+        const centerWidth = this.mapPixelWidth / 2;
+        const centerHeight = this.mapPixelHeight / 2;
+        const thirdHeight = this.mapPixelHeight / 10;
+        const leftColumn = centerWidth / 2 + 70 * scale;
+        const rightColumn = centerWidth + centerWidth / 2 - 70 * scale;
+        const firstRow = thirdHeight * 2;
+        const secondRow = thirdHeight * 4.5;
+        const thirdRow = thirdHeight * 7;
+
+        // COL 1 ROW 1
+        this.behaviorInputs.grass.leftArrow = this.add.sprite(leftColumn - 50 * scale, firstRow, 'grey-left-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.GRASS, this.behaviorInputs.grass));
+        this.behaviorInputs.grass.topArrow = this.add.sprite(leftColumn, firstRow - 50 * scale, 'grey-top-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.grass.rightArrow = this.add.sprite(leftColumn + 50 * scale, firstRow, 'grey-right-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.grass.panel = this.add.sprite(leftColumn, firstRow, 'grey-panel')
+            .setScale(scale * 0.8)
+            .setDepth(50);
+        this.behaviorInputs.grass.tile = this.add.sprite(leftColumn, firstRow, 'tiles')
+            .setScale(this.tileMultiplier)
+            .setDepth(75)
+            .play(`${TileAsset.GRASS1}`);
+
+        // COL 1 ROW 2
+        this.behaviorInputs.soil.leftArrow = this.add.sprite(leftColumn - 50 * scale, secondRow, 'grey-left-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.soil.topArrow = this.add.sprite(leftColumn, secondRow - 50 * scale, 'grey-top-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.soil.rightArrow = this.add.sprite(leftColumn + 50 * scale, secondRow, 'grey-right-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.soil.panel = this.add.sprite(leftColumn, secondRow, 'grey-panel')
+            .setScale(scale * 0.8)
+            .setDepth(50);
+        this.behaviorInputs.soil.tile = this.add.sprite(leftColumn, secondRow, 'tiles')
+            .setScale(this.tileMultiplier)
+            .setDepth(75)
+            .play(`${TileAsset.SOIL1}`);
+
+        // COL 1 ROW 3
+        this.behaviorInputs.sand.leftArrow = this.add.sprite(leftColumn - 50 * scale, thirdRow, 'grey-left-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.sand.topArrow = this.add.sprite(leftColumn, thirdRow - 50 * scale, 'grey-top-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.sand.rightArrow = this.add.sprite(leftColumn + 50 * scale, thirdRow, 'grey-right-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.sand.panel = this.add.sprite(leftColumn, thirdRow, 'grey-panel')
+            .setScale(scale * 0.8)
+            .setDepth(50);
+        this.behaviorInputs.sand.tile = this.add.sprite(leftColumn, thirdRow, 'tiles')
+            .setScale(this.tileMultiplier)
+            .setDepth(75)
+            .play(`${TileAsset.SAND1}`);
+
+        // COL 2 ROW 1
+        this.behaviorInputs.rocks.leftArrow = this.add.sprite(rightColumn - 50 * scale, firstRow, 'grey-left-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.rocks.rightArrow = this.add.sprite(rightColumn + 50 * scale, firstRow, 'grey-right-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.rocks.panel = this.add.sprite(rightColumn, firstRow, 'grey-panel')
+            .setScale(scale * 0.8)
+            .setDepth(50);
+        this.behaviorInputs.rocks.tile = this.add.sprite(rightColumn, firstRow, 'tiles')
+            .setScale(this.tileMultiplier)
+            .setDepth(75)
+            .play(`${TileAsset.ROCK2}`);
+
+        // COL 2 ROW 2
+        this.behaviorInputs.trees.leftArrow = this.add.sprite(rightColumn - 50 * scale, secondRow, 'grey-left-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.trees.rightArrow = this.add.sprite(rightColumn + 50 * scale, secondRow, 'grey-right-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.trees.panel = this.add.sprite(rightColumn, secondRow, 'grey-panel')
+            .setScale(scale * 0.8)
+            .setDepth(50);
+        this.behaviorInputs.trees.tile = this.add.sprite(rightColumn, secondRow, 'tiles')
+            .setScale(this.tileMultiplier)
+            .setDepth(75)
+            .play(`${TileAsset.TREE1}`);
+
+        // COL 2 ROW 3
+        this.behaviorInputs.roots.leftArrow = this.add.sprite(rightColumn - 50 * scale, thirdRow, 'grey-left-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.roots.rightArrow = this.add.sprite(rightColumn + 50 * scale, thirdRow, 'grey-right-arrow')
+            .setScale(scale)
+            .setDepth(55)
+            .setInteractive()
+            .on('pointerdown', () => {
+                console.log('pointerdown');
+            });
+        this.behaviorInputs.roots.panel = this.add.sprite(rightColumn, thirdRow, 'grey-panel')
+            .setScale(scale * 0.8)
+            .setDepth(50);
+        this.behaviorInputs.roots.tile = this.add.sprite(rightColumn, thirdRow, 'tiles')
+            .setScale(this.tileMultiplier)
+            .setDepth(75)
+            .play(`${TileAsset.ROOTS_DC}`);
+
+        const text = this.add.text(centerWidth, this.mapPixelHeight - 12, 'Launch simulation', { font: "12px", align: "center" })
             .setOrigin(0.5)
             .setPadding(4)
-            .setDepth(50)
+            .setDepth(100)
             .setStyle({ backgroundColor: '#111' })
             .setInteractive()
             .on('pointerdown', () => {
@@ -314,6 +538,23 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
+    private setSelected(
+        direction: Behavior,
+        tile: TileTypeForBehavior, obj: {
+            leftArrow?: Phaser.GameObjects.Sprite,
+            topArrow?: Phaser.GameObjects.Sprite,
+            rightArrow?: Phaser.GameObjects.Sprite,
+            panel?: Phaser.GameObjects.Sprite,
+            tile?: Phaser.GameObjects.Sprite,
+            selected: Behavior
+        }): void {
+        obj.selected = direction;
+        this.rootsBehavior.set(tile, direction);
+
+        // Set sprite of all arrows to grey
+        // Set sprite of selected arrow to green
+    }
+
     private initMap() {
         for (let y = 0; y < this.backgroundTiles.length; y++) {
             const backgroundRow = this.backgroundTiles[y];
@@ -492,9 +733,11 @@ export class MainScene extends Phaser.Scene {
 
     private loadUI() {
         this.load.image('grey-left-arrow', 'assets/ui/grey_sliderLeft.png');
+        this.load.image('grey-top-arrow', 'assets/ui/grey_sliderUp.png');
         this.load.image('grey-right-arrow', 'assets/ui/grey_sliderRight.png');
-        this.load.image('grey-panel', 'assets/ui/grey_sliderRight.png');
+        this.load.image('grey-panel', 'assets/ui/grey_panel.png');
         this.load.image('green-left-arrow', 'assets/ui/green_sliderLeft.png');
+        this.load.image('green-top-arrow', 'assets/ui/green_sliderUp.png');
         this.load.image('green-right-arrow', 'assets/ui/green_sliderRight.png');
         this.load.image('green-button', 'assets/ui/green_button03.png');
         this.tick('Generating the UI');
