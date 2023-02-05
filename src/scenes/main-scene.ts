@@ -9,6 +9,7 @@ export class MainScene extends Phaser.Scene {
     private initialized = false;
     private behaviorSelected = false;
     private isGameOver = false;
+    private graphicsBlue: { fillStyle: (arg0: number) => void; fillRect: (arg0: number, arg1: number, arg2: number, arg3: number) => void; };
 
     private turn = 0;
 
@@ -136,27 +137,27 @@ export class MainScene extends Phaser.Scene {
 
     public update(time: number, delta: number): void {
         if(this.behaviorSelected){
-            let graphicsBlue = this.add.graphics()
+            
             if(CONST.SCORE >= CONST.ROOTS * 0)
             {             
                 this.isGameOver = true;
             }
             if(CONST.SCORE >= CONST.ROOTS * 0.25)
             {             
-                graphicsBlue.fillStyle(0x0000FF);
-                graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 115, 10, 10)
+                this.graphicsBlue.fillStyle(0x0000FF);
+                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 115, 10, 10)
                 this.isGameOver = true;
             }
             if(CONST.SCORE >= CONST.ROOTS * 0.50)
             {             
-                graphicsBlue.fillStyle(0x0000FF);
-                graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 125, 10, 20)
+                this.graphicsBlue.fillStyle(0x0000FF);
+                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 125, 10, 20)
                 this.isGameOver = true;
             }
             if(CONST.SCORE >= CONST.ROOTS * 0.75)
             {          
-                graphicsBlue.fillStyle(0x0000FF);
-                graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 130, 10, 25)
+                this.graphicsBlue.fillStyle(0x0000FF);
+                this.graphicsBlue.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 130, 10, 25)
                 this.isGameOver = false;
             }
         }
@@ -961,7 +962,8 @@ export class MainScene extends Phaser.Scene {
 
      // Jauge de l'eau 
     private waterBar(){
-        var graphics = this.add.graphics()
+        let graphics = this.add.graphics()
+        this.graphicsBlue = this.add.graphics()
         graphics.fillStyle(0xffffff)
         graphics.fillRect(this.mapPixelWidth - 15, this.mapPixelHeight - 140, 10, 35)
     }
