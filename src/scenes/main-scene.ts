@@ -147,147 +147,170 @@ export class MainScene extends Phaser.Scene {
         const firstRow = thirdHeight * 2;
         const secondRow = thirdHeight * 4.5;
         const thirdRow = thirdHeight * 7;
-        const menuSprites: Phaser.GameObjects.Sprite[] = [];
+
+        const layer = this.add.layer();
+        layer.setDepth(100);
 
         // COL 1 ROW 1
-        menuSprites.push(this.behaviorInputs.grass.leftArrow = this.add.sprite(leftColumn - 50 * scale, firstRow, 'grey-left-arrow')
+        layer.add(this.behaviorInputs.grass.leftArrow = this.add.sprite(leftColumn - 50 * scale, firstRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.GRASS, this.behaviorInputs.grass)));
-        menuSprites.push(this.behaviorInputs.grass.topArrow = this.add.sprite(leftColumn, firstRow - 50 * scale, 'grey-top-arrow')
+        layer.add(this.behaviorInputs.grass.topArrow = this.add.sprite(leftColumn, firstRow - 50 * scale, 'grey-top-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.AHEAD, TileTypeForBehavior.GRASS, this.behaviorInputs.grass)));
-        menuSprites.push(this.behaviorInputs.grass.rightArrow = this.add.sprite(leftColumn + 50 * scale, firstRow, 'grey-right-arrow')
+        layer.add(this.behaviorInputs.grass.rightArrow = this.add.sprite(leftColumn + 50 * scale, firstRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.GRASS, this.behaviorInputs.grass)));
-        menuSprites.push(this.behaviorInputs.grass.panel = this.add.sprite(leftColumn, firstRow, 'grey-panel')
+        layer.add(this.behaviorInputs.grass.panel = this.add.sprite(leftColumn, firstRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50));
-        menuSprites.push(this.behaviorInputs.grass.tile = this.add.sprite(leftColumn, firstRow, 'tiles')
+        layer.add(this.behaviorInputs.grass.tile = this.add.sprite(leftColumn, firstRow, 'tiles')
             .setScale(this.tileMultiplier)
             .setDepth(75)
             .play(`${TileAsset.GRASS1}`));
 
         // COL 1 ROW 2
-        menuSprites.push(this.behaviorInputs.soil.leftArrow = this.add.sprite(leftColumn - 50 * scale, secondRow, 'grey-left-arrow')
+        layer.add(this.behaviorInputs.soil.leftArrow = this.add.sprite(leftColumn - 50 * scale, secondRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.SOIL, this.behaviorInputs.soil)));
-        menuSprites.push(this.behaviorInputs.soil.topArrow = this.add.sprite(leftColumn, secondRow - 50 * scale, 'grey-top-arrow')
+        layer.add(this.behaviorInputs.soil.topArrow = this.add.sprite(leftColumn, secondRow - 50 * scale, 'grey-top-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.AHEAD, TileTypeForBehavior.SOIL, this.behaviorInputs.soil)));
-        menuSprites.push(this.behaviorInputs.soil.rightArrow = this.add.sprite(leftColumn + 50 * scale, secondRow, 'grey-right-arrow')
+        layer.add(this.behaviorInputs.soil.rightArrow = this.add.sprite(leftColumn + 50 * scale, secondRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.SOIL, this.behaviorInputs.soil)));
-        menuSprites.push(this.behaviorInputs.soil.panel = this.add.sprite(leftColumn, secondRow, 'grey-panel')
+        layer.add(this.behaviorInputs.soil.panel = this.add.sprite(leftColumn, secondRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50));
-        menuSprites.push(this.behaviorInputs.soil.tile = this.add.sprite(leftColumn, secondRow, 'tiles')
+        layer.add(this.behaviorInputs.soil.tile = this.add.sprite(leftColumn, secondRow, 'tiles')
             .setScale(this.tileMultiplier)
             .setDepth(75)
             .play(`${TileAsset.SOIL1}`));
 
         // COL 1 ROW 3
-        menuSprites.push(this.behaviorInputs.sand.leftArrow = this.add.sprite(leftColumn - 50 * scale, thirdRow, 'grey-left-arrow')
+        layer.add(this.behaviorInputs.sand.leftArrow = this.add.sprite(leftColumn - 50 * scale, thirdRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.SAND, this.behaviorInputs.sand)));
-        menuSprites.push(this.behaviorInputs.sand.topArrow = this.add.sprite(leftColumn, thirdRow - 50 * scale, 'grey-top-arrow')
+        layer.add(this.behaviorInputs.sand.topArrow = this.add.sprite(leftColumn, thirdRow - 50 * scale, 'grey-top-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.AHEAD, TileTypeForBehavior.SAND, this.behaviorInputs.sand)));
-        menuSprites.push(this.behaviorInputs.sand.rightArrow = this.add.sprite(leftColumn + 50 * scale, thirdRow, 'grey-right-arrow')
+        layer.add(this.behaviorInputs.sand.rightArrow = this.add.sprite(leftColumn + 50 * scale, thirdRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.SAND, this.behaviorInputs.sand)));
-        menuSprites.push(this.behaviorInputs.sand.panel = this.add.sprite(leftColumn, thirdRow, 'grey-panel')
+        layer.add(this.behaviorInputs.sand.panel = this.add.sprite(leftColumn, thirdRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50));
-        menuSprites.push(this.behaviorInputs.sand.tile = this.add.sprite(leftColumn, thirdRow, 'tiles')
+        layer.add(this.behaviorInputs.sand.tile = this.add.sprite(leftColumn, thirdRow, 'tiles')
             .setScale(this.tileMultiplier)
             .setDepth(75)
             .play(`${TileAsset.SAND1}`));
 
         // COL 2 ROW 1
-        menuSprites.push(this.behaviorInputs.rocks.leftArrow = this.add.sprite(rightColumn - 50 * scale, firstRow, 'grey-left-arrow')
+        layer.add(this.behaviorInputs.rocks.leftArrow = this.add.sprite(rightColumn - 50 * scale, firstRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.ROCK, this.behaviorInputs.rocks)));
-        menuSprites.push(this.behaviorInputs.rocks.rightArrow = this.add.sprite(rightColumn + 50 * scale, firstRow, 'grey-right-arrow')
+        layer.add(this.behaviorInputs.rocks.rightArrow = this.add.sprite(rightColumn + 50 * scale, firstRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.ROCK, this.behaviorInputs.rocks)));
-        menuSprites.push(this.behaviorInputs.rocks.panel = this.add.sprite(rightColumn, firstRow, 'grey-panel')
+        layer.add(this.behaviorInputs.rocks.panel = this.add.sprite(rightColumn, firstRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50));
-        menuSprites.push(this.behaviorInputs.rocks.tile = this.add.sprite(rightColumn, firstRow, 'tiles')
+        layer.add(this.behaviorInputs.rocks.tile = this.add.sprite(rightColumn, firstRow, 'tiles')
             .setScale(this.tileMultiplier)
             .setDepth(75)
             .play(`${TileAsset.ROCK2}`));
 
         // COL 2 ROW 2
-        menuSprites.push(this.behaviorInputs.trees.leftArrow = this.add.sprite(rightColumn - 50 * scale, secondRow, 'grey-left-arrow')
+        layer.add(this.behaviorInputs.trees.leftArrow = this.add.sprite(rightColumn - 50 * scale, secondRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.TREE, this.behaviorInputs.trees)));
-        menuSprites.push(this.behaviorInputs.trees.rightArrow = this.add.sprite(rightColumn + 50 * scale, secondRow, 'grey-right-arrow')
+        layer.add(this.behaviorInputs.trees.rightArrow = this.add.sprite(rightColumn + 50 * scale, secondRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.TREE, this.behaviorInputs.trees)));
-        menuSprites.push(this.behaviorInputs.trees.panel = this.add.sprite(rightColumn, secondRow, 'grey-panel')
+        layer.add(this.behaviorInputs.trees.panel = this.add.sprite(rightColumn, secondRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50));
-        menuSprites.push(this.behaviorInputs.trees.tile = this.add.sprite(rightColumn, secondRow, 'tiles')
+        layer.add(this.behaviorInputs.trees.tile = this.add.sprite(rightColumn, secondRow, 'tiles')
             .setScale(this.tileMultiplier)
             .setDepth(75)
             .play(`${TileAsset.TREE1}`));
 
         // COL 2 ROW 3
-        menuSprites.push(this.behaviorInputs.roots.leftArrow = this.add.sprite(rightColumn - 50 * scale, thirdRow, 'grey-left-arrow')
+        layer.add(this.behaviorInputs.roots.leftArrow = this.add.sprite(rightColumn - 50 * scale, thirdRow, 'grey-left-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.LEFT, TileTypeForBehavior.ROOTS, this.behaviorInputs.roots)));
-        menuSprites.push(this.behaviorInputs.roots.rightArrow = this.add.sprite(rightColumn + 50 * scale, thirdRow, 'grey-right-arrow')
+        layer.add(this.behaviorInputs.roots.rightArrow = this.add.sprite(rightColumn + 50 * scale, thirdRow, 'grey-right-arrow')
             .setScale(scale)
             .setDepth(55)
             .setInteractive()
             .on('pointerdown', () => this.setSelected(Behavior.RIGHT, TileTypeForBehavior.ROOTS, this.behaviorInputs.roots)));
-        menuSprites.push(this.behaviorInputs.roots.panel = this.add.sprite(rightColumn, thirdRow, 'grey-panel')
+        layer.add(this.behaviorInputs.roots.panel = this.add.sprite(rightColumn, thirdRow, 'grey-panel')
             .setScale(scale * 0.8)
             .setDepth(50));
-        menuSprites.push(this.behaviorInputs.roots.tile = this.add.sprite(rightColumn, thirdRow, 'tiles')
+        layer.add(this.behaviorInputs.roots.tile = this.add.sprite(rightColumn, thirdRow, 'tiles')
             .setScale(this.tileMultiplier)
             .setDepth(75)
             .play(`${TileAsset.ROOTS_DC}`));
 
-        const text = this.add.text(centerWidth, this.mapPixelHeight - 12, 'Launch simulation', { font: "12px", align: "center" })
-            .setOrigin(0.5)
+        const hideText = 'Hide menu';
+        const showText = 'Show Menu';
+        const hideMenu = this.add.text(100*scale, this.mapPixelHeight - 40*scale, hideText, { font: "14px", align: "center" })
+            .setOrigin(0, 0)
             .setPadding(4)
+            .setScale(scale)
+            .setDepth(100)
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => {
+                if (hideMenu.text === hideText) {
+                    hideMenu.setText(showText);
+                    layer.setAlpha(0);
+                } else {
+                    hideMenu.setText(hideText);
+                    layer.setAlpha(1);
+                }
+            });
+
+        const text = this.add.text(this.mapPixelWidth - 100*scale, this.mapPixelHeight - 40*scale, 'Launch simulation', { font: "14px", align: "center" })
+            .setOrigin(1, 0)
+            .setPadding(4)
+            .setScale(scale)
             .setDepth(100)
             .setStyle({ backgroundColor: '#111' })
             .setInteractive()
             .on('pointerdown', () => {
                 this.behaviorSelected = true;
                 text.destroy();
-                menuSprites.forEach(sprite => sprite.destroy());
+                hideMenu.destroy();
+                layer.destroy();
             });
 
         this.setSelected(this.behaviorInputs.grass.selected, TileTypeForBehavior.GRASS, this.behaviorInputs.grass);
