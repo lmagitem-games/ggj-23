@@ -5,38 +5,24 @@ import { Behavior, Direction, Root } from '../objects/root';
 import { Tile, TileAsset, TileContents, TileType, TileTypeForBehavior } from '../objects/tile';
 
 export class MainScene extends Phaser.Scene {
-    private loaded = false;
-    private initialized = false;
-    private behaviorSelected = false;
-    private isGameOver = false;
-
-    private waterBarContainer: Phaser.GameObjects.Graphics;
-    private waterBarFill: Phaser.GameObjects.Graphics;
-
-    private turn = 0;
-
-    private tileMultiplier = 1;
-    private soundParam = 0;
-    private mapLevel = 1;
-    private levelToLoad = this.mapLevel + '-s' + this.tileMultiplier;
-    private mapTileWidth = this.tileMultiplier * 16;
-    private mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
-    private mapTileHeight = this.tileMultiplier * 9;
-    private mapPixelHeight = this.tileMultiplier * 9 * CONST.TILE_HEIGHT;
-    private backgroundTiles: (number | null)[][] = [];
-    private foregroundTiles: (number | null)[][] = [];
-    private map: Tile[][] = [];
-    private roots: Root[] = [];
-    private rootsToRemove: number[] = [];
-    private rootsBehavior: Map<TileTypeForBehavior, Behavior> = new Map([
-        [TileTypeForBehavior.GRASS, Behavior.AHEAD],
-        [TileTypeForBehavior.SOIL, Behavior.AHEAD],
-        [TileTypeForBehavior.SAND, Behavior.AHEAD],
-        [TileTypeForBehavior.WATER, Behavior.AHEAD],
-        [TileTypeForBehavior.TREE, Behavior.LEFT],
-        [TileTypeForBehavior.ROCK, Behavior.RIGHT],
-        [TileTypeForBehavior.ROOTS, Behavior.LEFT],
-    ]);
+    private loaded: boolean;
+    private initialized: boolean;
+    private behaviorSelected: boolean;
+    private turn: number;
+    private tileMultiplier: number;
+    private soundParam: number;
+    private mapLevel: number;
+    private levelToLoad: string;
+    private mapTileWidth: number;
+    private mapPixelWidth: number;
+    private mapTileHeight: number;
+    private mapPixelHeight: number;
+    private backgroundTiles: (number | null)[][];
+    private foregroundTiles: (number | null)[][];
+    private map: Tile[][];
+    private roots: Root[];
+    private rootsToRemove: number[];
+    private rootsBehavior: Map<TileTypeForBehavior, Behavior>;
     private behaviorInputs: {
         grass: {
             leftArrow?: Phaser.GameObjects.Sprite,
@@ -85,16 +71,11 @@ export class MainScene extends Phaser.Scene {
             panel?: Phaser.GameObjects.Sprite,
             tile?: Phaser.GameObjects.Sprite,
             selected: Behavior
-        },
-    } = {
-            grass: { selected: Behavior.AHEAD },
-            soil: { selected: Behavior.AHEAD },
-            sand: { selected: Behavior.AHEAD },
-            trees: { selected: Behavior.LEFT },
-            rocks: { selected: Behavior.RIGHT },
-            roots: { selected: Behavior.LEFT }
-        };
+        }
+    };
 
+    private waterBarContainer: Phaser.GameObjects.Graphics;
+    private waterBarFill: Phaser.GameObjects.Graphics;
     private gameloopTimer: Phaser.Time.TimerEvent;
     private ambianceAudio: Phaser.Sound.BaseSound;
     private sound1: Phaser.Sound.BaseSound;
@@ -104,6 +85,7 @@ export class MainScene extends Phaser.Scene {
 
     constructor() {
         super({ key: "MainScene" });
+        this.clearConfig();
     }
 
     public init(data: { tileMultiplier: number, map: number, soundParam: number } = { tileMultiplier: 1, map: 1, soundParam: 0 }): void {
@@ -127,7 +109,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     public create(): void {
-        this.waitUntilEverythingLoaded();
+        setTimeout(() => {
+        this.waitUntilEverythingLoaded(); // doesn't appear to be of any use?
         this.initTileAnimations();
         this.initMap();
         this.initCamera();
@@ -135,6 +118,7 @@ export class MainScene extends Phaser.Scene {
         this.buildMenu();
         this.launchGameLoop();
         this.addWaterBar();
+        }, 50);
     }
 
     public update(time: number, delta: number): void {
@@ -289,15 +273,6 @@ export class MainScene extends Phaser.Scene {
             .setDepth(75)
             .play(`${TileAsset.ROOTS_DC}`));
 
-        this.add.text(12, 12, 'Back', { font: "12px", align: "center" })
-            .setOrigin(0)
-            .setPadding(4)
-            .setDepth(50)
-            .setStyle({ backgroundColor: '#111' })
-            .setInteractive()
-            .on('pointerdown', () => {
-                this.clearScene();
-            });
         const hideText = 'Hide menu';
         const showText = 'Show Menu';
         const hideMenu = this.add.text(100 * scale, this.mapPixelHeight - 40 * scale, hideText, { font: "14px", align: "center" })
@@ -315,6 +290,18 @@ export class MainScene extends Phaser.Scene {
                     hideMenu.setText(hideText);
                     layer.setAlpha(1);
                 }
+            });
+
+        this.add.text(12, 12, 'Back', { font: "14px", align: "center" })
+            .setOrigin(0)
+            .setPadding(4)
+            .setScale(scale)
+            .setDepth(50)
+            .setStyle({ backgroundColor: '#111' })
+            .setInteractive()
+            .on('pointerdown', () => {
+                layer.destroy();
+                this.clearScene();
             });
 
         const text = this.add.text(this.mapPixelWidth - 100 * scale, this.mapPixelHeight - 40 * scale, 'Launch simulation', { font: "14px", align: "center" })
@@ -976,14 +963,68 @@ export class MainScene extends Phaser.Scene {
     }
 
     private clearScene() {
-        this.ambianceAudio.destroy();
+        this.destroyGameObjects();
+        this.clearConfig();
         this.scene.start("MainMenuScene");
+    }
+
+    private clearConfig() { 
         CONST.LOAD_COUNT = 0;
         CONST.SCORE = 0;
         CONST.ROOTS = 0;
         this.loaded = false;
         this.initialized = false;
         this.behaviorSelected = false;
-        this.isGameOver = false;
+        this.turn = 0;
+        this.tileMultiplier = 1;
+        this.soundParam = 0;
+        this.mapLevel = 1;
+        this.levelToLoad = this.mapLevel + '-s' + this.tileMultiplier;
+        this.mapTileWidth = this.tileMultiplier * 16;
+        this.mapPixelWidth = this.tileMultiplier * 16 * CONST.TILE_WIDTH;
+        this.mapTileHeight = this.tileMultiplier * 9;
+        this.mapPixelHeight = this.tileMultiplier * 9 * CONST.TILE_HEIGHT;
+        this.backgroundTiles = [];
+        this.foregroundTiles = [];
+        this.map = [];
+        this.roots = [];
+        this.rootsToRemove = [];
+        this.rootsBehavior = new Map([
+            [TileTypeForBehavior.GRASS, Behavior.AHEAD],
+            [TileTypeForBehavior.SOIL, Behavior.AHEAD],
+            [TileTypeForBehavior.SAND, Behavior.AHEAD],
+            [TileTypeForBehavior.WATER, Behavior.AHEAD],
+            [TileTypeForBehavior.TREE, Behavior.LEFT],
+            [TileTypeForBehavior.ROCK, Behavior.RIGHT],
+            [TileTypeForBehavior.ROOTS, Behavior.LEFT],
+        ]);
+        this.behaviorInputs = {
+            grass: { selected: Behavior.AHEAD },
+            soil: { selected: Behavior.AHEAD },
+            sand: { selected: Behavior.AHEAD },
+            trees: { selected: Behavior.LEFT },
+            rocks: { selected: Behavior.RIGHT },
+            roots: { selected: Behavior.LEFT }
+        };
+    }
+
+    private destroyGameObjects() {
+        Object.values(this.behaviorInputs).forEach(value =>
+        {
+            value.leftArrow?.destroy();
+            value.topArrow?.destroy();
+            value.rightArrow?.destroy();
+            value.panel?.destroy();
+            value.tile?.destroy();
+        });
+
+        this.gameloopTimer?.destroy();
+        this.ambianceAudio?.destroy();
+        this.sound1?.destroy();
+        this.sound2?.destroy();
+        this.sound3?.destroy();
+        this.sound4?.destroy();
+        this.waterBarContainer?.destroy();
+        this.waterBarFill?.destroy();
     }
 }
